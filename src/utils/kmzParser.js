@@ -49,29 +49,34 @@ export function parseKML(kmlText) {
     placemarks.forEach(placemark => {
       const name = placemark.querySelector('name')?.textContent || 'Unnamed';
 
-      // Check for Polygon
-      const polygon = placemark.querySelector('Polygon');
+      // Check for Polygon - use getElementsByTagName for namespace compatibility
+      const polygonElements = placemark.getElementsByTagName('Polygon');
+      const polygon = polygonElements.length > 0 ? polygonElements[0] : null;
       console.log(`  Placemark: ${name}, Has Polygon: ${!!polygon}`);
 
       if (polygon) {
         // Get coordinates from outerBoundaryIs > LinearRing > coordinates
-        const outerBoundary = polygon.querySelector('outerBoundaryIs');
+        const outerBoundaryElements = polygon.getElementsByTagName('outerBoundaryIs');
+        const outerBoundary = outerBoundaryElements.length > 0 ? outerBoundaryElements[0] : null;
         let coordsElement = null;
 
         console.log(`    outerBoundary found: ${!!outerBoundary}`);
 
         if (outerBoundary) {
-          const linearRing = outerBoundary.querySelector('LinearRing');
+          const linearRingElements = outerBoundary.getElementsByTagName('LinearRing');
+          const linearRing = linearRingElements.length > 0 ? linearRingElements[0] : null;
           console.log(`    LinearRing found: ${!!linearRing}`);
           if (linearRing) {
-            coordsElement = linearRing.querySelector('coordinates');
+            const coordsElements = linearRing.getElementsByTagName('coordinates');
+            coordsElement = coordsElements.length > 0 ? coordsElements[0] : null;
             console.log(`    coordinates found: ${!!coordsElement}`);
           }
         }
 
         // Fallback to direct coordinates search
         if (!coordsElement) {
-          coordsElement = polygon.querySelector('coordinates');
+          const fallbackCoords = polygon.getElementsByTagName('coordinates');
+          coordsElement = fallbackCoords.length > 0 ? fallbackCoords[0] : null;
           console.log(`    Fallback coordinates: ${!!coordsElement}`);
         }
 
