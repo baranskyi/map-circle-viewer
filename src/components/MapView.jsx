@@ -1,9 +1,23 @@
-import { MapContainer, TileLayer, Circle, Popup, useMap } from 'react-leaflet';
+import { useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, Circle, Polygon, Popup, useMap } from 'react-leaflet';
 
-// Component to update map view when center/zoom changes
+// Component to update map view only when center/zoom actually change
 function MapUpdater({ center, zoom }) {
   const map = useMap();
-  map.setView(center, zoom);
+  const prevCenter = useRef(center);
+  const prevZoom = useRef(zoom);
+
+  useEffect(() => {
+    const centerChanged = prevCenter.current[0] !== center[0] || prevCenter.current[1] !== center[1];
+    const zoomChanged = prevZoom.current !== zoom;
+
+    if (centerChanged || zoomChanged) {
+      map.setView(center, zoom);
+      prevCenter.current = center;
+      prevZoom.current = zoom;
+    }
+  }, [center, zoom, map]);
+
   return null;
 }
 
@@ -26,27 +40,52 @@ function MapView({ groups, groupSettings, center, zoom }) {
         const settings = groupSettings[group.id];
         if (!settings || !settings.visible) return null;
 
-        return group.points.map((point, idx) => (
-          <Circle
-            key={`${group.id}-${idx}`}
-            center={[point.lat, point.lng]}
-            radius={settings.radius}
-            pathOptions={{
-              color: settings.color,
-              fillColor: settings.color,
-              fillOpacity: 0.2,
-              weight: 2
-            }}
-          >
-            <Popup>
-              <div>
-                <strong>{point.name}</strong>
-                <br />
-                <span className="text-sm text-gray-600">{group.name}</span>
-              </div>
-            </Popup>
-          </Circle>
-        ));
+        return [
+          // Render circles for points
+          ...(group.points || []).map((point, idx) => (
+            <Circle
+              key={`circle-${group.id}-${idx}`}
+              center={[point.lat, point.lng]}
+              radius={settings.radius}
+              pathOptions={{
+                color: settings.color,
+                fillColor: settings.color,
+                fillOpacity: 0.2,
+                weight: 2
+              }}
+            >
+              <Popup>
+                <div>
+                  <strong>{point.name}</strong>
+                  <br />
+                  <span className="text-sm text-gray-600">{group.name}</span>
+                </div>
+              </Popup>
+            </Circle>
+          )),
+
+          // Render polygons
+          ...(settings.polygonsVisible && group.polygons ? group.polygons.map((polygon, idx) => (
+            <Polygon
+              key={`polygon-${group.id}-${idx}`}
+              positions={polygon.coordinates}
+              pathOptions={{
+                color: settings.color,
+                fillColor: settings.color,
+                fillOpacity: 0.2,
+                weight: 2
+              }}
+            >
+              <Popup>
+                <div>
+                  <strong>{polygon.name}</strong>
+                  <br />
+                  <span className="text-sm text-gray-600">{group.name} (полигон)</span>
+                </div>
+              </Popup>
+            </Polygon>
+          )) : [])
+        ];
       })}
     </MapContainer>
   );

@@ -1,6 +1,6 @@
 import GroupControl from './GroupControl';
 
-function ControlPanel({ groups, groupSettings, onToggle, onRadiusChange, onColorChange }) {
+function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onRadiusChange, onColorChange }) {
   if (groups.length === 0) {
     return (
       <div className="text-gray-500 text-center py-4">
@@ -19,6 +19,7 @@ function ControlPanel({ groups, groupSettings, onToggle, onRadiusChange, onColor
           group={group}
           settings={groupSettings[group.id]}
           onToggle={() => onToggle(group.id)}
+          onTogglePolygons={() => onTogglePolygons(group.id)}
           onRadiusChange={(radius) => onRadiusChange(group.id, radius)}
           onColorChange={(color) => onColorChange(group.id, color)}
         />

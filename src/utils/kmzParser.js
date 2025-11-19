@@ -22,7 +22,7 @@ export async function parseKMZ(file) {
   return parseKML(kmlText);
 }
 
-// Parse KML text and extract groups with points
+// Parse KML text and extract groups with points and polygons
 export function parseKML(kmlText) {
   const parser = new DOMParser();
   const doc = parser.parseFromString(kmlText, 'text/xml');
@@ -41,16 +41,30 @@ export function parseKML(kmlText) {
     if (placemarks.length === 0) return;
 
     const points = [];
+    const polygons = [];
     let groupColor = defaultColors[colorIndex % defaultColors.length];
 
     placemarks.forEach(placemark => {
       const name = placemark.querySelector('name')?.textContent || 'Unnamed';
-      const coordinates = placemark.querySelector('coordinates')?.textContent;
 
-      if (coordinates) {
-        const [lng, lat] = coordinates.trim().split(',').map(Number);
-        if (!isNaN(lat) && !isNaN(lng)) {
-          points.push({ name, lat, lng });
+      // Check for Polygon
+      const polygon = placemark.querySelector('Polygon');
+      if (polygon) {
+        const coordinates = polygon.querySelector('coordinates')?.textContent;
+        if (coordinates) {
+          const coords = parsePolygonCoordinates(coordinates);
+          if (coords.length > 0) {
+            polygons.push({ name, coordinates: coords });
+          }
+        }
+      } else {
+        // Check for Point coordinates
+        const coordinates = placemark.querySelector('coordinates')?.textContent;
+        if (coordinates) {
+          const [lng, lat] = coordinates.trim().split(',').map(Number);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            points.push({ name, lat, lng });
+          }
         }
       }
 
@@ -68,13 +82,14 @@ export function parseKML(kmlText) {
       }
     });
 
-    if (points.length > 0) {
+    if (points.length > 0 || polygons.length > 0) {
       groups.push({
         id: `group-${index}-${Date.now()}`,
         name: folderName,
         defaultColor: groupColor,
         defaultRadius: 1000,
-        points
+        points,
+        polygons
       });
       colorIndex++;
     }
@@ -84,31 +99,64 @@ export function parseKML(kmlText) {
   if (groups.length === 0) {
     const allPlacemarks = doc.querySelectorAll('Placemark');
     const points = [];
+    const polygons = [];
 
     allPlacemarks.forEach(placemark => {
       const name = placemark.querySelector('name')?.textContent || 'Unnamed';
-      const coordinates = placemark.querySelector('coordinates')?.textContent;
 
-      if (coordinates) {
-        const [lng, lat] = coordinates.trim().split(',').map(Number);
-        if (!isNaN(lat) && !isNaN(lng)) {
-          points.push({ name, lat, lng });
+      // Check for Polygon
+      const polygon = placemark.querySelector('Polygon');
+      if (polygon) {
+        const coordinates = polygon.querySelector('coordinates')?.textContent;
+        if (coordinates) {
+          const coords = parsePolygonCoordinates(coordinates);
+          if (coords.length > 0) {
+            polygons.push({ name, coordinates: coords });
+          }
+        }
+      } else {
+        const coordinates = placemark.querySelector('coordinates')?.textContent;
+        if (coordinates) {
+          const [lng, lat] = coordinates.trim().split(',').map(Number);
+          if (!isNaN(lat) && !isNaN(lng)) {
+            points.push({ name, lat, lng });
+          }
         }
       }
     });
 
-    if (points.length > 0) {
+    if (points.length > 0 || polygons.length > 0) {
       groups.push({
         id: `group-default-${Date.now()}`,
         name: 'Imported Points',
         defaultColor: '#FF5252',
         defaultRadius: 1000,
-        points
+        points,
+        polygons
       });
     }
   }
 
   return { groups };
+}
+
+// Parse polygon coordinates from KML format
+function parsePolygonCoordinates(coordString) {
+  const coords = [];
+  const lines = coordString.trim().split(/\s+/);
+
+  lines.forEach(line => {
+    const parts = line.split(',');
+    if (parts.length >= 2) {
+      const lng = parseFloat(parts[0]);
+      const lat = parseFloat(parts[1]);
+      if (!isNaN(lat) && !isNaN(lng)) {
+        coords.push([lat, lng]);
+      }
+    }
+  });
+
+  return coords;
 }
 
 // Extract color from KML style element
@@ -144,18 +192,32 @@ function extractColorFromStyle(style, doc) {
   return null;
 }
 
-// Calculate center point from all groups
+// Calculate center point from all groups (points and polygons)
 export function calculateCenter(groups) {
   let totalLat = 0;
   let totalLng = 0;
   let count = 0;
 
   groups.forEach(group => {
-    group.points.forEach(point => {
-      totalLat += point.lat;
-      totalLng += point.lng;
-      count++;
-    });
+    // Include points
+    if (group.points) {
+      group.points.forEach(point => {
+        totalLat += point.lat;
+        totalLng += point.lng;
+        count++;
+      });
+    }
+
+    // Include polygon coordinates
+    if (group.polygons) {
+      group.polygons.forEach(polygon => {
+        polygon.coordinates.forEach(coord => {
+          totalLat += coord[0];
+          totalLng += coord[1];
+          count++;
+        });
+      });
+    }
   });
 
   if (count === 0) return [43.235, 76.92]; // Default to Almaty

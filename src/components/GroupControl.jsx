@@ -1,5 +1,7 @@
-function GroupControl({ group, settings, onToggle, onRadiusChange, onColorChange }) {
+function GroupControl({ group, settings, onToggle, onTogglePolygons, onRadiusChange, onColorChange }) {
   if (!settings) return null;
+
+  const hasPolygons = group.polygons && group.polygons.length > 0;
 
   return (
     <div className="border rounded-lg p-3 bg-gray-50">
@@ -19,7 +21,7 @@ function GroupControl({ group, settings, onToggle, onRadiusChange, onColorChange
           {group.name}
         </label>
         <span className="text-xs text-gray-500">
-          ({group.points.length})
+          ({group.points?.length || 0}{hasPolygons ? ` + ${group.polygons.length}p` : ''})
         </span>
       </div>
 
@@ -56,6 +58,25 @@ function GroupControl({ group, settings, onToggle, onRadiusChange, onColorChange
               {settings.color}
             </span>
           </div>
+
+          {/* Polygon toggle (only shown if group has polygons) */}
+          {hasPolygons && (
+            <div className="flex items-center gap-2 pt-1">
+              <input
+                type="checkbox"
+                id={`polygons-${group.id}`}
+                checked={settings.polygonsVisible}
+                onChange={onTogglePolygons}
+                className="w-3 h-3 rounded"
+              />
+              <label
+                htmlFor={`polygons-${group.id}`}
+                className="text-xs text-gray-600 cursor-pointer"
+              >
+                Показать полигоны ({group.polygons.length})
+              </label>
+            </div>
+          )}
         </div>
       )}
     </div>

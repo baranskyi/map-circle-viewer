@@ -16,7 +16,8 @@ export const defaultMapData = {
         { name: "Есентай молл", lat: 43.2181287, lng: 76.9260117 },
         { name: "Арбат", lat: 43.2613096, lng: 76.9449785 },
         { name: "Asia park", lat: 43.2561933, lng: 76.9287852 }
-      ]
+      ],
+      polygons: []
     },
     {
       id: "invictus",
@@ -31,7 +32,8 @@ export const defaultMapData = {
         { name: "InvictusGO Zhibek", lat: 43.2576944, lng: 76.9441244 },
         { name: "InvictusGO Grand Park", lat: 43.1783227, lng: 76.9213427 },
         { name: "InvictusGO Tole Bi", lat: 43.2566944, lng: 76.9219204 }
-      ]
+      ],
+      polygons: []
     },
     {
       id: "s89",
@@ -41,7 +43,8 @@ export const defaultMapData = {
       points: [
         { name: "S89 Abay", lat: 43.2394991, lng: 76.9147584 },
         { name: "S89 Shevchenko", lat: 43.2574658, lng: 76.9148691 }
-      ]
+      ],
+      polygons: []
     },
     {
       id: "singles",
@@ -51,7 +54,8 @@ export const defaultMapData = {
       points: [
         { name: "Silvers Gym", lat: 43.2389931, lng: 76.9555153 },
         { name: "Гимнастический зал Кульбашева", lat: 43.2374641, lng: 76.8860568 }
-      ]
+      ],
+      polygons: []
     }
   ]
 };
