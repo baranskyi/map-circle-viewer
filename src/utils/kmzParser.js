@@ -50,10 +50,14 @@ export function parseKML(kmlText) {
       // Check for Polygon
       const polygon = placemark.querySelector('Polygon');
       if (polygon) {
-        const coordinates = polygon.querySelector('coordinates')?.textContent;
-        if (coordinates) {
-          const coords = parsePolygonCoordinates(coordinates);
-          if (coords.length > 0) {
+        // Coordinates can be in outerBoundaryIs > LinearRing > coordinates
+        const linearRing = polygon.querySelector('outerBoundaryIs LinearRing coordinates') ||
+                          polygon.querySelector('LinearRing coordinates') ||
+                          polygon.querySelector('coordinates');
+        if (linearRing) {
+          const coordText = linearRing.textContent || linearRing;
+          const coords = parsePolygonCoordinates(typeof coordText === 'string' ? coordText : coordText.textContent);
+          if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
           }
         }
@@ -61,9 +65,22 @@ export function parseKML(kmlText) {
         // Check for Point coordinates
         const coordinates = placemark.querySelector('coordinates')?.textContent;
         if (coordinates) {
-          const [lng, lat] = coordinates.trim().split(',').map(Number);
-          if (!isNaN(lat) && !isNaN(lng)) {
-            points.push({ name, lat, lng });
+          // Check if it's a single point or multiple coordinates
+          const trimmed = coordinates.trim();
+          const lines = trimmed.split(/\s+/).filter(l => l.length > 0);
+
+          if (lines.length === 1) {
+            // Single point
+            const [lng, lat] = lines[0].split(',').map(Number);
+            if (!isNaN(lat) && !isNaN(lng)) {
+              points.push({ name, lat, lng });
+            }
+          } else if (lines.length > 2) {
+            // Multiple coordinates = polygon without Polygon tag
+            const coords = parsePolygonCoordinates(trimmed);
+            if (coords.length > 2) {
+              polygons.push({ name, coordinates: coords });
+            }
           }
         }
       }
@@ -107,19 +124,32 @@ export function parseKML(kmlText) {
       // Check for Polygon
       const polygon = placemark.querySelector('Polygon');
       if (polygon) {
-        const coordinates = polygon.querySelector('coordinates')?.textContent;
-        if (coordinates) {
-          const coords = parsePolygonCoordinates(coordinates);
-          if (coords.length > 0) {
+        const linearRing = polygon.querySelector('outerBoundaryIs LinearRing coordinates') ||
+                          polygon.querySelector('LinearRing coordinates') ||
+                          polygon.querySelector('coordinates');
+        if (linearRing) {
+          const coordText = linearRing.textContent || linearRing;
+          const coords = parsePolygonCoordinates(typeof coordText === 'string' ? coordText : coordText.textContent);
+          if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
           }
         }
       } else {
         const coordinates = placemark.querySelector('coordinates')?.textContent;
         if (coordinates) {
-          const [lng, lat] = coordinates.trim().split(',').map(Number);
-          if (!isNaN(lat) && !isNaN(lng)) {
-            points.push({ name, lat, lng });
+          const trimmed = coordinates.trim();
+          const lines = trimmed.split(/\s+/).filter(l => l.length > 0);
+
+          if (lines.length === 1) {
+            const [lng, lat] = lines[0].split(',').map(Number);
+            if (!isNaN(lat) && !isNaN(lng)) {
+              points.push({ name, lat, lng });
+            }
+          } else if (lines.length > 2) {
+            const coords = parsePolygonCoordinates(trimmed);
+            if (coords.length > 2) {
+              polygons.push({ name, coordinates: coords });
+            }
           }
         }
       }
