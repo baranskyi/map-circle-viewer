@@ -38,6 +38,8 @@ export function parseKML(kmlText) {
     const folderName = folder.querySelector(':scope > name')?.textContent || `Group ${index + 1}`;
     const placemarks = folder.querySelectorAll('Placemark');
 
+    console.log(`Folder: ${folderName}, Placemarks: ${placemarks.length}`);
+
     if (placemarks.length === 0) return;
 
     const points = [];
@@ -49,25 +51,33 @@ export function parseKML(kmlText) {
 
       // Check for Polygon
       const polygon = placemark.querySelector('Polygon');
+      console.log(`  Placemark: ${name}, Has Polygon: ${!!polygon}`);
+
       if (polygon) {
         // Get coordinates from outerBoundaryIs > LinearRing > coordinates
         const outerBoundary = polygon.querySelector('outerBoundaryIs');
         let coordsElement = null;
 
+        console.log(`    outerBoundary found: ${!!outerBoundary}`);
+
         if (outerBoundary) {
           const linearRing = outerBoundary.querySelector('LinearRing');
+          console.log(`    LinearRing found: ${!!linearRing}`);
           if (linearRing) {
             coordsElement = linearRing.querySelector('coordinates');
+            console.log(`    coordinates found: ${!!coordsElement}`);
           }
         }
 
         // Fallback to direct coordinates search
         if (!coordsElement) {
           coordsElement = polygon.querySelector('coordinates');
+          console.log(`    Fallback coordinates: ${!!coordsElement}`);
         }
 
         if (coordsElement && coordsElement.textContent) {
           const coords = parsePolygonCoordinates(coordsElement.textContent);
+          console.log(`    Parsed ${coords.length} coordinates for polygon`);
           if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
           }
@@ -109,6 +119,8 @@ export function parseKML(kmlText) {
         }
       }
     });
+
+    console.log(`  Group ${folderName}: ${points.length} points, ${polygons.length} polygons`);
 
     if (points.length > 0 || polygons.length > 0) {
       groups.push({
