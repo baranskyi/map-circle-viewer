@@ -21,13 +21,21 @@ body {
 /* Style for permanent labels on circles and polygons */
 .point-label,
 .polygon-label {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: transparent !important;
   border: none !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
-  padding: 2px 6px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  font-style: italic !important;
   white-space: nowrap !important;
+  color: #333 !important;
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff,
+    0 0 3px #fff !important;
 }
 
 .point-label::before,
