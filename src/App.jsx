@@ -5,6 +5,8 @@ import FileUpload from './components/FileUpload';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
+const APP_VERSION = '1.3.0';
+
 function App() {
   const [mapData, setMapData] = useState(defaultMapData);
   const [center, setCenter] = useState(defaultCenter);
@@ -140,6 +142,10 @@ function App() {
             onColorChange={updateColor}
             onToggleAll={toggleAllGroups}
           />
+
+          <div className="mt-4 pt-3 border-t text-xs text-gray-400 text-center">
+            v{APP_VERSION}
+          </div>
         </div>
       </div>
     </div>
