@@ -50,13 +50,24 @@ export function parseKML(kmlText) {
       // Check for Polygon
       const polygon = placemark.querySelector('Polygon');
       if (polygon) {
-        // Coordinates can be in outerBoundaryIs > LinearRing > coordinates
-        const linearRing = polygon.querySelector('outerBoundaryIs LinearRing coordinates') ||
-                          polygon.querySelector('LinearRing coordinates') ||
-                          polygon.querySelector('coordinates');
-        if (linearRing) {
-          const coordText = linearRing.textContent || linearRing;
-          const coords = parsePolygonCoordinates(typeof coordText === 'string' ? coordText : coordText.textContent);
+        // Get coordinates from outerBoundaryIs > LinearRing > coordinates
+        const outerBoundary = polygon.querySelector('outerBoundaryIs');
+        let coordsElement = null;
+
+        if (outerBoundary) {
+          const linearRing = outerBoundary.querySelector('LinearRing');
+          if (linearRing) {
+            coordsElement = linearRing.querySelector('coordinates');
+          }
+        }
+
+        // Fallback to direct coordinates search
+        if (!coordsElement) {
+          coordsElement = polygon.querySelector('coordinates');
+        }
+
+        if (coordsElement && coordsElement.textContent) {
+          const coords = parsePolygonCoordinates(coordsElement.textContent);
           if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
           }
@@ -124,12 +135,22 @@ export function parseKML(kmlText) {
       // Check for Polygon
       const polygon = placemark.querySelector('Polygon');
       if (polygon) {
-        const linearRing = polygon.querySelector('outerBoundaryIs LinearRing coordinates') ||
-                          polygon.querySelector('LinearRing coordinates') ||
-                          polygon.querySelector('coordinates');
-        if (linearRing) {
-          const coordText = linearRing.textContent || linearRing;
-          const coords = parsePolygonCoordinates(typeof coordText === 'string' ? coordText : coordText.textContent);
+        const outerBoundary = polygon.querySelector('outerBoundaryIs');
+        let coordsElement = null;
+
+        if (outerBoundary) {
+          const linearRing = outerBoundary.querySelector('LinearRing');
+          if (linearRing) {
+            coordsElement = linearRing.querySelector('coordinates');
+          }
+        }
+
+        if (!coordsElement) {
+          coordsElement = polygon.querySelector('coordinates');
+        }
+
+        if (coordsElement && coordsElement.textContent) {
+          const coords = parsePolygonCoordinates(coordsElement.textContent);
           if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
           }
