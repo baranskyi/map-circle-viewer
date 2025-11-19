@@ -86,6 +86,20 @@ function App() {
     setZoom(defaultZoom);
   };
 
+  // Toggle all groups visibility
+  const toggleAllGroups = (visible) => {
+    setGroupSettings(prev => {
+      const updated = { ...prev };
+      Object.keys(updated).forEach(groupId => {
+        updated[groupId] = {
+          ...updated[groupId],
+          visible
+        };
+      });
+      return updated;
+    });
+  };
+
   return (
     <div className="h-screen w-screen relative">
       <MapView
@@ -111,6 +125,7 @@ function App() {
             onTogglePolygons={togglePolygons}
             onRadiusChange={updateRadius}
             onColorChange={updateColor}
+            onToggleAll={toggleAllGroups}
           />
         </div>
       </div>
