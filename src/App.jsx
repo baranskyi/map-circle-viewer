@@ -5,7 +5,7 @@ import FileUpload from './components/FileUpload';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '1.3.0';
+const APP_VERSION = '1.4.0';
 
 function App() {
   const [mapData, setMapData] = useState(defaultMapData);

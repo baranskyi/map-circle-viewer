@@ -17,3 +17,20 @@ body {
   height: 100%;
   width: 100%;
 }
+
+/* Style for permanent labels on circles and polygons */
+.point-label,
+.polygon-label {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+}
+
+.point-label::before,
+.polygon-label::before {
+  display: none !important;
+}

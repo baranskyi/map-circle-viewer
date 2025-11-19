@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, Circle, Polygon, Popup, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Circle, Polygon, Popup, Tooltip, useMap } from 'react-leaflet';
 
 // Component to update map view only when center/zoom actually change
 function MapUpdater({ center, zoom }) {
@@ -54,14 +54,17 @@ function MapView({ groups, groupSettings, center, zoom }) {
                 weight: 2
               }}
             >
+              <Popup>
+                <div>
+                  <strong>{point.name}</strong>
+                  <br />
+                  <span className="text-sm text-gray-600">{group.name}</span>
+                </div>
+              </Popup>
               {settings.labelsVisible && (
-                <Popup>
-                  <div>
-                    <strong>{point.name}</strong>
-                    <br />
-                    <span className="text-sm text-gray-600">{group.name}</span>
-                  </div>
-                </Popup>
+                <Tooltip permanent direction="center" className="point-label">
+                  {point.name}
+                </Tooltip>
               )}
             </Circle>
           )),
@@ -78,14 +81,17 @@ function MapView({ groups, groupSettings, center, zoom }) {
                 weight: 2
               }}
             >
+              <Popup>
+                <div>
+                  <strong>{polygon.name}</strong>
+                  <br />
+                  <span className="text-sm text-gray-600">{group.name} (полигон)</span>
+                </div>
+              </Popup>
               {settings.labelsVisible && (
-                <Popup>
-                  <div>
-                    <strong>{polygon.name}</strong>
-                    <br />
-                    <span className="text-sm text-gray-600">{group.name} (полигон)</span>
-                  </div>
-                </Popup>
+                <Tooltip permanent direction="center" className="polygon-label">
+                  {polygon.name}
+                </Tooltip>
               )}
             </Polygon>
           )) : [])
