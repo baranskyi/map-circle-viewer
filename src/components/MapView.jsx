@@ -34,7 +34,7 @@ function MapView({ groups, groupSettings, center, zoom }) {
             pathOptions={{
               color: settings.color,
               fillColor: settings.color,
-              fillOpacity: 0.5,
+              fillOpacity: 0.2,
               weight: 2
             }}
           >
