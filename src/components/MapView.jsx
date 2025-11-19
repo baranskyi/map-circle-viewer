@@ -44,7 +44,7 @@ function MapView({ groups, groupSettings, center, zoom }) {
           // Render circles for points
           ...(group.points || []).map((point, idx) => (
             <Circle
-              key={`circle-${group.id}-${idx}`}
+              key={`circle-${group.id}-${idx}-${settings.labelsVisible}`}
               center={[point.lat, point.lng]}
               radius={settings.radius}
               pathOptions={{
@@ -72,7 +72,7 @@ function MapView({ groups, groupSettings, center, zoom }) {
           // Render polygons
           ...(settings.polygonsVisible && group.polygons ? group.polygons.map((polygon, idx) => (
             <Polygon
-              key={`polygon-${group.id}-${idx}`}
+              key={`polygon-${group.id}-${idx}-${settings.labelsVisible}`}
               positions={polygon.coordinates}
               pathOptions={{
                 color: settings.color,
