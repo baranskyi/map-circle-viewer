@@ -38,7 +38,7 @@ export function parseKML(kmlText) {
     const folderName = folder.querySelector(':scope > name')?.textContent || `Group ${index + 1}`;
     const placemarks = folder.querySelectorAll('Placemark');
 
-    console.log(`Folder: ${folderName}, Placemarks: ${placemarks.length}`);
+    console.log(`=== Folder: ${folderName}, Placemarks: ${placemarks.length} ===`);
 
     if (placemarks.length === 0) return;
 
@@ -52,7 +52,7 @@ export function parseKML(kmlText) {
       // Check for Polygon - use getElementsByTagName for namespace compatibility
       const polygonElements = placemark.getElementsByTagName('Polygon');
       const polygon = polygonElements.length > 0 ? polygonElements[0] : null;
-      console.log(`  Placemark: ${name}, Has Polygon: ${!!polygon}`);
+      console.log(`  Placemark: "${name}", polygonElements.length: ${polygonElements.length}, Has Polygon: ${!!polygon}`);
 
       if (polygon) {
         // Get coordinates from outerBoundaryIs > LinearRing > coordinates
@@ -82,10 +82,15 @@ export function parseKML(kmlText) {
 
         if (coordsElement && coordsElement.textContent) {
           const coords = parsePolygonCoordinates(coordsElement.textContent);
-          console.log(`    Parsed ${coords.length} coordinates for polygon`);
+          console.log(`    Parsed ${coords.length} coordinates for polygon "${name}"`);
           if (coords.length > 2) {
             polygons.push({ name, coordinates: coords });
+            console.log(`    ✓ POLYGON ADDED: "${name}" with ${coords.length} coords`);
+          } else {
+            console.log(`    ✗ POLYGON SKIPPED: "${name}" - only ${coords.length} coords`);
           }
+        } else {
+          console.log(`    ✗ NO COORDS ELEMENT for polygon "${name}"`);
         }
       } else {
         // Check for Point coordinates
@@ -125,7 +130,10 @@ export function parseKML(kmlText) {
       }
     });
 
-    console.log(`  Group ${folderName}: ${points.length} points, ${polygons.length} polygons`);
+    console.log(`  === SUMMARY ${folderName}: ${points.length} points, ${polygons.length} polygons ===`);
+    if (polygons.length > 0) {
+      console.log(`  POLYGONS FOUND:`, polygons.map(p => p.name));
+    }
 
     if (points.length > 0 || polygons.length > 0) {
       groups.push({
