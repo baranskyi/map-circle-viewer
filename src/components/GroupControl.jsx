@@ -1,4 +1,4 @@
-function GroupControl({ group, settings, onToggle, onTogglePolygons, onRadiusChange, onColorChange }) {
+function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange }) {
   if (!settings) return null;
 
   const hasPolygons = group.polygons && group.polygons.length > 0;
@@ -57,6 +57,24 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onRadiusCha
             <span className="text-xs text-gray-500 font-mono">
               {settings.color}
             </span>
+          </div>
+
+          {/* Labels toggle */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 w-12">Labels:</label>
+            <input
+              type="checkbox"
+              id={`labels-${group.id}`}
+              checked={settings.labelsVisible}
+              onChange={onToggleLabels}
+              className="w-4 h-4 rounded"
+            />
+            <label
+              htmlFor={`labels-${group.id}`}
+              className="text-xs text-gray-600 cursor-pointer"
+            >
+              {settings.labelsVisible ? 'On' : 'Off'}
+            </label>
           </div>
 
           {/* Polygon toggle (only shown if group has polygons) */}

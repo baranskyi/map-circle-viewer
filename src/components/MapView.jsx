@@ -54,13 +54,15 @@ function MapView({ groups, groupSettings, center, zoom }) {
                 weight: 2
               }}
             >
-              <Popup>
-                <div>
-                  <strong>{point.name}</strong>
-                  <br />
-                  <span className="text-sm text-gray-600">{group.name}</span>
-                </div>
-              </Popup>
+              {settings.labelsVisible && (
+                <Popup>
+                  <div>
+                    <strong>{point.name}</strong>
+                    <br />
+                    <span className="text-sm text-gray-600">{group.name}</span>
+                  </div>
+                </Popup>
+              )}
             </Circle>
           )),
 
@@ -76,13 +78,15 @@ function MapView({ groups, groupSettings, center, zoom }) {
                 weight: 2
               }}
             >
-              <Popup>
-                <div>
-                  <strong>{polygon.name}</strong>
-                  <br />
-                  <span className="text-sm text-gray-600">{group.name} (полигон)</span>
-                </div>
-              </Popup>
+              {settings.labelsVisible && (
+                <Popup>
+                  <div>
+                    <strong>{polygon.name}</strong>
+                    <br />
+                    <span className="text-sm text-gray-600">{group.name} (полигон)</span>
+                  </div>
+                </Popup>
+              )}
             </Polygon>
           )) : [])
         ];

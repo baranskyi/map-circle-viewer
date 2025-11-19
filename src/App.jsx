@@ -18,8 +18,9 @@ function App() {
     const settings = {};
     mapData.groups.forEach(group => {
       settings[group.id] = {
-        visible: true,
+        visible: false,
         polygonsVisible: true,
+        labelsVisible: true,
         radius: group.defaultRadius || 1000,
         color: group.defaultColor || '#FF5252'
       };
@@ -53,6 +54,17 @@ function App() {
       [groupId]: {
         ...prev[groupId],
         polygonsVisible: !prev[groupId].polygonsVisible
+      }
+    }));
+  };
+
+  // Toggle labels visibility
+  const toggleLabels = (groupId) => {
+    setGroupSettings(prev => ({
+      ...prev,
+      [groupId]: {
+        ...prev[groupId],
+        labelsVisible: !prev[groupId].labelsVisible
       }
     }));
   };
@@ -123,6 +135,7 @@ function App() {
             groupSettings={groupSettings}
             onToggle={toggleGroup}
             onTogglePolygons={togglePolygons}
+            onToggleLabels={toggleLabels}
             onRadiusChange={updateRadius}
             onColorChange={updateColor}
             onToggleAll={toggleAllGroups}
