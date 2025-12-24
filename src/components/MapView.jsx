@@ -22,7 +22,20 @@ function MapUpdater({ center, zoom }) {
   return null;
 }
 
-function MapView({ groups, groupSettings, center, zoom, showMetro = true, showMalls = false, showFitness = false, showSupermarkets = false }) {
+function MapView({
+  groups,
+  groupSettings,
+  center,
+  zoom,
+  showMetro = true,
+  showMalls = false,
+  showFitness = false,
+  showSupermarkets = false,
+  metroRadius = 500,
+  mallsRadius = 1000,
+  fitnessRadius = 500,
+  supermarketsRadius = 500
+}) {
   return (
     <MapContainer
       center={center}
@@ -38,10 +51,10 @@ function MapView({ groups, groupSettings, center, zoom, showMetro = true, showMa
       <MapUpdater center={center} zoom={zoom} />
 
       {/* POI Layers */}
-      <MetroLayer visible={showMetro} />
-      <MallsLayer visible={showMalls} />
-      <FitnessLayer visible={showFitness} />
-      <SupermarketsLayer visible={showSupermarkets} />
+      <MetroLayer visible={showMetro} radius={metroRadius} />
+      <MallsLayer visible={showMalls} radius={mallsRadius} />
+      <FitnessLayer visible={showFitness} radius={fitnessRadius} />
+      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { CircleMarker, Circle, Popup, Tooltip } from 'react-leaflet';
 import { supabase } from '../../lib/supabase';
 
-export default function MallsLayer({ visible = true }) {
+const MALL_COLOR = '#9C27B0';
+
+export default function MallsLayer({ visible = true, radius = 1000 }) {
   const [malls, setMalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -46,15 +48,31 @@ export default function MallsLayer({ visible = true }) {
 
   return (
     <>
-      {malls.map((mall) => (
+      {malls.map((mall) => [
+        /* Coverage circle */
+        radius > 0 && (
+          <Circle
+            key={`coverage-${mall.id}`}
+            center={[mall.lat, mall.lng]}
+            radius={radius}
+            pathOptions={{
+              color: MALL_COLOR,
+              weight: 2,
+              fillColor: MALL_COLOR,
+              fillOpacity: 0.1,
+              dashArray: '5, 5',
+            }}
+          />
+        ),
+        /* Mall marker */
         <CircleMarker
-          key={mall.id}
+          key={`marker-${mall.id}`}
           center={[mall.lat, mall.lng]}
           radius={6}
           pathOptions={{
             color: '#FFFFFF',
             weight: 2,
-            fillColor: '#9C27B0',
+            fillColor: MALL_COLOR,
             fillOpacity: 0.9,
           }}
         >
@@ -80,7 +98,7 @@ export default function MallsLayer({ visible = true }) {
             🏬 {mall.name_uk || mall.name}
           </Tooltip>
         </CircleMarker>
-      ))}
+      ])}
     </>
   );
 }

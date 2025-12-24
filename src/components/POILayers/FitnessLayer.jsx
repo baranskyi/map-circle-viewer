@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { CircleMarker, Circle, Popup, Tooltip } from 'react-leaflet';
 import { supabase } from '../../lib/supabase';
 
 // Brand colors for known chains
@@ -11,7 +11,7 @@ const BRAND_COLORS = {
   'default': '#4CAF50'
 };
 
-export default function FitnessLayer({ visible = true }) {
+export default function FitnessLayer({ visible = true, radius = 500 }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,44 +59,63 @@ export default function FitnessLayer({ visible = true }) {
 
   return (
     <>
-      {clubs.map((club) => (
-        <CircleMarker
-          key={club.id}
-          center={[club.lat, club.lng]}
-          radius={5}
-          pathOptions={{
-            color: '#FFFFFF',
-            weight: 2,
-            fillColor: getColor(club.brand),
-            fillOpacity: 0.9,
-          }}
-        >
-          <Popup>
-            <div>
-              <div className="font-bold">{club.name_uk || club.name}</div>
-              {club.brand && club.brand !== 'Fitness Club' && (
-                <div className="text-sm text-purple-600 font-medium">{club.brand}</div>
-              )}
-              {club.address && (
-                <div className="text-sm text-gray-500">{club.address}</div>
-              )}
-              {club.website && (
-                <a
-                  href={club.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-blue-500 hover:underline"
-                >
-                  Веб-сайт
-                </a>
-              )}
-            </div>
-          </Popup>
-          <Tooltip direction="top" offset={[0, -5]}>
-            🏋️ {club.name_uk || club.name}
-          </Tooltip>
-        </CircleMarker>
-      ))}
+      {clubs.map((club) => {
+        const color = getColor(club.brand);
+        return [
+          /* Coverage circle */
+          radius > 0 && (
+            <Circle
+              key={`coverage-${club.id}`}
+              center={[club.lat, club.lng]}
+              radius={radius}
+              pathOptions={{
+                color: color,
+                weight: 2,
+                fillColor: color,
+                fillOpacity: 0.1,
+                dashArray: '5, 5',
+              }}
+            />
+          ),
+          /* Club marker */
+          <CircleMarker
+            key={`marker-${club.id}`}
+            center={[club.lat, club.lng]}
+            radius={5}
+            pathOptions={{
+              color: '#FFFFFF',
+              weight: 2,
+              fillColor: color,
+              fillOpacity: 0.9,
+            }}
+          >
+            <Popup>
+              <div>
+                <div className="font-bold">{club.name_uk || club.name}</div>
+                {club.brand && club.brand !== 'Fitness Club' && (
+                  <div className="text-sm text-purple-600 font-medium">{club.brand}</div>
+                )}
+                {club.address && (
+                  <div className="text-sm text-gray-500">{club.address}</div>
+                )}
+                {club.website && (
+                  <a
+                    href={club.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-500 hover:underline"
+                  >
+                    Веб-сайт
+                  </a>
+                )}
+              </div>
+            </Popup>
+            <Tooltip direction="top" offset={[0, -5]}>
+              🏋️ {club.name_uk || club.name}
+            </Tooltip>
+          </CircleMarker>
+        ];
+      })}
     </>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { CircleMarker, Circle, Popup, Tooltip } from 'react-leaflet';
 import { supabase } from '../../lib/supabase';
 
 // Metro line colors
@@ -9,7 +9,7 @@ const LINE_COLORS = {
   'M3': '#009E49', // Green
 };
 
-export default function MetroLayer({ visible = true }) {
+export default function MetroLayer({ visible = true, radius = 500 }) {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,9 +62,25 @@ export default function MetroLayer({ visible = true }) {
         const metadata = station.metadata || {};
         const lineColor = LINE_COLORS[metadata.line] || metadata.line_color || '#666666';
 
-        return (
+        return [
+          /* Coverage circle */
+          radius > 0 && (
+            <Circle
+              key={`coverage-${station.id}`}
+              center={[station.lat, station.lng]}
+              radius={radius}
+              pathOptions={{
+                color: lineColor,
+                weight: 2,
+                fillColor: lineColor,
+                fillOpacity: 0.1,
+                dashArray: '5, 5',
+              }}
+            />
+          ),
+          /* Station marker */
           <CircleMarker
-            key={station.id}
+            key={`marker-${station.id}`}
             center={[station.lat, station.lng]}
             radius={8}
             pathOptions={{
@@ -95,7 +111,7 @@ export default function MetroLayer({ visible = true }) {
               <span style={{ color: lineColor, fontWeight: 'bold' }}>Ⓜ</span> {station.name_uk || station.name}
             </Tooltip>
           </CircleMarker>
-        );
+        ];
       })}
     </>
   );

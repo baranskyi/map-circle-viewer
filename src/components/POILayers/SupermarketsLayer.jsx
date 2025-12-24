@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CircleMarker, Popup, Tooltip } from 'react-leaflet';
+import { CircleMarker, Circle, Popup, Tooltip } from 'react-leaflet';
 import { supabase } from '../../lib/supabase';
 
 // Brand colors for known chains
@@ -19,7 +19,7 @@ const BRAND_COLORS = {
   'default': '#607D8B'
 };
 
-export default function SupermarketsLayer({ visible = true }) {
+export default function SupermarketsLayer({ visible = true, radius = 500 }) {
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -67,34 +67,53 @@ export default function SupermarketsLayer({ visible = true }) {
 
   return (
     <>
-      {markets.map((market) => (
-        <CircleMarker
-          key={market.id}
-          center={[market.lat, market.lng]}
-          radius={4}
-          pathOptions={{
-            color: '#FFFFFF',
-            weight: 1,
-            fillColor: getColor(market.brand),
-            fillOpacity: 0.85,
-          }}
-        >
-          <Popup>
-            <div>
-              <div className="font-bold">{market.name_uk || market.name}</div>
-              {market.brand && market.brand !== 'Supermarket' && (
-                <div className="text-sm text-green-600 font-medium">{market.brand}</div>
-              )}
-              {market.address && (
-                <div className="text-sm text-gray-500">{market.address}</div>
-              )}
-            </div>
-          </Popup>
-          <Tooltip direction="top" offset={[0, -4]}>
-            🛒 {market.name_uk || market.name}
-          </Tooltip>
-        </CircleMarker>
-      ))}
+      {markets.map((market) => {
+        const color = getColor(market.brand);
+        return [
+          /* Coverage circle */
+          radius > 0 && (
+            <Circle
+              key={`coverage-${market.id}`}
+              center={[market.lat, market.lng]}
+              radius={radius}
+              pathOptions={{
+                color: color,
+                weight: 2,
+                fillColor: color,
+                fillOpacity: 0.1,
+                dashArray: '5, 5',
+              }}
+            />
+          ),
+          /* Market marker */
+          <CircleMarker
+            key={`marker-${market.id}`}
+            center={[market.lat, market.lng]}
+            radius={4}
+            pathOptions={{
+              color: '#FFFFFF',
+              weight: 1,
+              fillColor: color,
+              fillOpacity: 0.85,
+            }}
+          >
+            <Popup>
+              <div>
+                <div className="font-bold">{market.name_uk || market.name}</div>
+                {market.brand && market.brand !== 'Supermarket' && (
+                  <div className="text-sm text-green-600 font-medium">{market.brand}</div>
+                )}
+                {market.address && (
+                  <div className="text-sm text-gray-500">{market.address}</div>
+                )}
+              </div>
+            </Popup>
+            <Tooltip direction="top" offset={[0, -4]}>
+              🛒 {market.name_uk || market.name}
+            </Tooltip>
+          </CircleMarker>
+        ];
+      })}
     </>
   );
 }

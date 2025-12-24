@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.1.0';
+const APP_VERSION = '2.2.0';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -28,6 +28,12 @@ function MapApp() {
   const [showMalls, setShowMalls] = useState(false);
   const [showFitness, setShowFitness] = useState(false);
   const [showSupermarkets, setShowSupermarkets] = useState(false);
+
+  // POI Layer radius settings (in meters)
+  const [metroRadius, setMetroRadius] = useState(500);
+  const [mallsRadius, setMallsRadius] = useState(1000);
+  const [fitnessRadius, setFitnessRadius] = useState(500);
+  const [supermarketsRadius, setSupermarketsRadius] = useState(500);
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -179,6 +185,10 @@ function MapApp() {
         showMalls={showMalls}
         showFitness={showFitness}
         showSupermarkets={showSupermarkets}
+        metroRadius={metroRadius}
+        mallsRadius={mallsRadius}
+        fitnessRadius={fitnessRadius}
+        supermarketsRadius={supermarketsRadius}
       />
 
       <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">
@@ -224,59 +234,183 @@ function MapApp() {
 
           {/* POI Layers */}
           <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-semibold mb-2 text-gray-700">Інфраструктура</h3>
-            <label className="flex items-center gap-2 cursor-pointer mb-2">
-              <input
-                type="checkbox"
-                checked={showMetro}
-                onChange={() => setShowMetro(!showMetro)}
-                className="w-4 h-4 rounded border-gray-300"
-              />
-              <span className="text-sm flex items-center gap-1">
-                🚇 Метро Києва
-                <span className="flex gap-0.5 ml-1">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#E4181C' }} title="М1 Червона"></span>
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#0072BC' }} title="М2 Синя"></span>
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#009E49' }} title="М3 Зелена"></span>
+            <h3 className="text-sm font-semibold mb-3 text-gray-700">Інфраструктура</h3>
+
+            {/* Metro */}
+            <div className="mb-3 pb-3 border-b border-gray-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showMetro}
+                  onChange={() => setShowMetro(!showMetro)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🚇 Метро Києва
+                  <span className="flex gap-0.5 ml-1">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#E4181C' }} title="М1 Червона"></span>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#0072BC' }} title="М2 Синя"></span>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#009E49' }} title="М3 Зелена"></span>
+                  </span>
                 </span>
-              </span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={showMalls}
-                onChange={() => setShowMalls(!showMalls)}
-                className="w-4 h-4 rounded border-gray-300"
-              />
-              <span className="text-sm flex items-center gap-1">
-                🏬 Торгові центри
-                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#9C27B0' }} title="ТЦ"></span>
-              </span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer mt-2">
-              <input
-                type="checkbox"
-                checked={showFitness}
-                onChange={() => setShowFitness(!showFitness)}
-                className="w-4 h-4 rounded border-gray-300"
-              />
-              <span className="text-sm flex items-center gap-1">
-                🏋️ Фітнес-клуби
-                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#4CAF50' }} title="Фітнес"></span>
-              </span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer mt-2">
-              <input
-                type="checkbox"
-                checked={showSupermarkets}
-                onChange={() => setShowSupermarkets(!showSupermarkets)}
-                className="w-4 h-4 rounded border-gray-300"
-              />
-              <span className="text-sm flex items-center gap-1">
-                🛒 Супермаркети
-                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#FF6B00' }} title="Супермаркети"></span>
-              </span>
-            </label>
+              </label>
+              {showMetro && (
+                <div className="mt-2 ml-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <input
+                      type="number"
+                      min="200"
+                      max="2000"
+                      step="100"
+                      value={metroRadius}
+                      onChange={(e) => setMetroRadius(Math.min(2000, Math.max(200, parseInt(e.target.value) || 200)))}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+                    />
+                    <span className="text-xs text-gray-500">м</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[500, 1000, 2000].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setMetroRadius(r)}
+                        className={`px-2 py-0.5 text-xs rounded ${metroRadius === r ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                      >
+                        {r}м
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Malls */}
+            <div className="mb-3 pb-3 border-b border-gray-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showMalls}
+                  onChange={() => setShowMalls(!showMalls)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🏬 Торгові центри
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#9C27B0' }} title="ТЦ"></span>
+                </span>
+              </label>
+              {showMalls && (
+                <div className="mt-2 ml-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <input
+                      type="number"
+                      min="200"
+                      max="2000"
+                      step="100"
+                      value={mallsRadius}
+                      onChange={(e) => setMallsRadius(Math.min(2000, Math.max(200, parseInt(e.target.value) || 200)))}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+                    />
+                    <span className="text-xs text-gray-500">м</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[500, 1000, 2000].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setMallsRadius(r)}
+                        className={`px-2 py-0.5 text-xs rounded ${mallsRadius === r ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                      >
+                        {r}м
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Fitness */}
+            <div className="mb-3 pb-3 border-b border-gray-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showFitness}
+                  onChange={() => setShowFitness(!showFitness)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🏋️ Фітнес-клуби
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#4CAF50' }} title="Фітнес"></span>
+                </span>
+              </label>
+              {showFitness && (
+                <div className="mt-2 ml-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <input
+                      type="number"
+                      min="200"
+                      max="2000"
+                      step="100"
+                      value={fitnessRadius}
+                      onChange={(e) => setFitnessRadius(Math.min(2000, Math.max(200, parseInt(e.target.value) || 200)))}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+                    />
+                    <span className="text-xs text-gray-500">м</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[500, 1000, 2000].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setFitnessRadius(r)}
+                        className={`px-2 py-0.5 text-xs rounded ${fitnessRadius === r ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                      >
+                        {r}м
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Supermarkets */}
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showSupermarkets}
+                  onChange={() => setShowSupermarkets(!showSupermarkets)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🛒 Супермаркети
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#FF6B00' }} title="Супермаркети"></span>
+                </span>
+              </label>
+              {showSupermarkets && (
+                <div className="mt-2 ml-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <input
+                      type="number"
+                      min="200"
+                      max="2000"
+                      step="100"
+                      value={supermarketsRadius}
+                      onChange={(e) => setSupermarketsRadius(Math.min(2000, Math.max(200, parseInt(e.target.value) || 200)))}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+                    />
+                    <span className="text-xs text-gray-500">м</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[500, 1000, 2000].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setSupermarketsRadius(r)}
+                        className={`px-2 py-0.5 text-xs rounded ${supermarketsRadius === r ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                      >
+                        {r}м
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Control Panel */}
