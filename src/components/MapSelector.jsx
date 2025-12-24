@@ -8,6 +8,7 @@ export default function MapSelector({ onMapSelect }) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newMapName, setNewMapName] = useState('');
   const [newMapDescription, setNewMapDescription] = useState('');
+  const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, name } or null
 
   useEffect(() => {
     if (user) {
@@ -32,10 +33,15 @@ export default function MapSelector({ onMapSelect }) {
     }
   };
 
-  const handleDelete = async (mapId, e) => {
+  const handleDeleteClick = (map, e) => {
     e.stopPropagation();
-    if (confirm('Ви впевнені, що хочете видалити цю карту?')) {
-      await deleteMap(mapId);
+    setDeleteConfirm({ id: map.id, name: map.name });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (deleteConfirm) {
+      await deleteMap(deleteConfirm.id);
+      setDeleteConfirm(null);
     }
   };
 
@@ -90,11 +96,11 @@ export default function MapSelector({ onMapSelect }) {
               <span className="text-xs text-gray-400 capitalize">{map.access_level}</span>
               {map.access_level === 'owner' && (
                 <button
-                  onClick={(e) => handleDelete(map.id, e)}
-                  className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => handleDeleteClick(map, e)}
+                  className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-1"
                   title="Видалити"
                 >
-                  ✕
+                  🗑️
                 </button>
               )}
             </div>
@@ -150,6 +156,39 @@ export default function MapSelector({ onMapSelect }) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000]">
+          <div className="bg-white rounded-lg p-6 w-96 max-w-[90vw]">
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-3">⚠️</div>
+              <h3 className="text-lg font-bold text-gray-800">Видалити карту?</h3>
+            </div>
+            <p className="text-center text-gray-600 mb-4">
+              Ви впевнені, що хочете видалити карту<br />
+              <span className="font-semibold text-gray-800">"{deleteConfirm.name}"</span>?
+            </p>
+            <p className="text-center text-sm text-red-500 mb-6">
+              Цю дію неможливо скасувати. Всі групи та точки будуть видалені.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded font-medium"
+              >
+                Скасувати
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 font-medium"
+              >
+                Видалити
+              </button>
+            </div>
           </div>
         </div>
       )}
