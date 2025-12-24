@@ -9,11 +9,11 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.2.0';
+const APP_VERSION = '2.3.0';
 
 function MapApp() {
   const { user } = useAuthStore();
-  const { currentMap, groups, fetchMap, createGroup, createPoint, updateGroup, deleteGroup, loading } = useDataStore();
+  const { currentMap, groups, fetchMap, fetchMaps, createGroup, createPoint, updateGroup, deleteGroup, loading } = useDataStore();
 
   // Local state for KMZ data (when not using Supabase)
   const [localMapData, setLocalMapData] = useState(defaultMapData);
@@ -72,13 +72,21 @@ function MapApp() {
     }
   };
 
-  // Handle new KMZ data loaded
+  // Handle new KMZ data loaded (for non-authenticated users)
   const handleDataLoaded = (newData) => {
     setLocalMapData(newData);
     setMode('local');
     const newCenter = calculateCenter(newData.groups);
     setCenter(newCenter);
     setZoom(12);
+  };
+
+  // Handle new map created from KMZ upload (for authenticated users)
+  const handleMapCreated = async (mapId) => {
+    // Refresh maps list
+    await fetchMaps();
+    // Select the newly created map
+    await handleMapSelect(mapId);
   };
 
   // Toggle group visibility
@@ -223,6 +231,7 @@ function MapApp() {
           <FileUpload
             onDataLoaded={handleDataLoaded}
             onReset={resetToDefault}
+            onMapCreated={handleMapCreated}
           />
 
           {/* Loading indicator */}

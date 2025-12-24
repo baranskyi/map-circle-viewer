@@ -28,21 +28,37 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
       {/* Controls (only shown when group is visible) */}
       {settings.visible && (
         <div className="space-y-2 mt-2">
-          {/* Radius slider */}
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-600 w-12">Radius:</label>
-            <input
-              type="range"
-              min="1000"
-              max="5000"
-              step="500"
-              value={settings.radius}
-              onChange={(e) => onRadiusChange(e.target.value)}
-              className="flex-1 h-2"
-            />
-            <span className="text-xs text-gray-600 w-14 text-right">
-              {settings.radius}m
-            </span>
+          {/* Radius controls */}
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <label className="text-xs text-gray-600 w-12">Radius:</label>
+              <input
+                type="number"
+                min="0"
+                max="5000"
+                step="100"
+                value={settings.radius}
+                onChange={(e) => onRadiusChange(Math.min(5000, Math.max(0, parseInt(e.target.value) || 0)))}
+                className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+              />
+              <span className="text-xs text-gray-500">м</span>
+            </div>
+            <div className="flex gap-1 ml-12">
+              {[0, 500, 1000, 2000].map(r => (
+                <button
+                  key={r}
+                  onClick={() => onRadiusChange(r)}
+                  className={`px-2 py-0.5 text-xs rounded ${
+                    settings.radius === r
+                      ? 'text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                  style={settings.radius === r ? { backgroundColor: settings.color } : {}}
+                >
+                  {r === 0 ? 'Вимк' : `${r}м`}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Color picker */}

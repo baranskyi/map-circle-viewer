@@ -1,14 +1,64 @@
 import { useState, useRef } from 'react';
 import JSZip from 'jszip';
 import { parseKMZ, parseKML } from '../utils/kmzParser';
+import { useAuthStore } from '../stores/authStore';
+import { mapsApi, groupsApi, pointsApi } from '../services/api';
 
-function FileUpload({ onDataLoaded, onReset }) {
+function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
+  const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [mode, setMode] = useState('file'); // 'file' or 'url'
   const [url, setUrl] = useState('');
   const fileInputRef = useRef(null);
+
+  // Save parsed data to Supabase
+  const saveToSupabase = async (data, name) => {
+    if (!user) return null;
+
+    setSaving(true);
+    try {
+      // Create new map with filename
+      const mapName = name.replace(/\.(kmz|kml)$/i, '');
+      const newMap = await mapsApi.create({
+        name: mapName,
+        description: `Imported from ${name}`
+      });
+
+      // Create groups and points
+      for (let i = 0; i < data.groups.length; i++) {
+        const group = data.groups[i];
+        const newGroup = await groupsApi.create({
+          map_id: newMap.id,
+          name: group.name,
+          color: group.defaultColor || '#FF5252',
+          default_radius: group.defaultRadius || 1000,
+          sort_order: i
+        });
+
+        // Create points for this group
+        for (const point of group.points || []) {
+          await pointsApi.create({
+            group_id: newGroup.id,
+            name: point.name,
+            lat: point.lat,
+            lng: point.lng,
+            address: point.address || '',
+            metadata: point.metadata || {}
+          });
+        }
+      }
+
+      return newMap;
+    } catch (err) {
+      console.error('Error saving to Supabase:', err);
+      throw err;
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
@@ -34,7 +84,21 @@ function FileUpload({ onDataLoaded, onReset }) {
       }
 
       setFileName(file.name);
-      onDataLoaded(data);
+
+      // If user is authenticated, save to Supabase
+      if (user) {
+        try {
+          const newMap = await saveToSupabase(data, file.name);
+          if (newMap && onMapCreated) {
+            onMapCreated(newMap.id);
+          }
+        } catch (saveErr) {
+          setError(`File loaded but failed to save: ${saveErr.message}`);
+        }
+      } else {
+        // Not authenticated - just load locally
+        onDataLoaded(data);
+      }
     } catch (err) {
       setError(err.message);
       console.error('File parsing error:', err);
@@ -114,7 +178,21 @@ function FileUpload({ onDataLoaded, onReset }) {
       const extractedName = urlPath.split('/').pop() || 'remote.kml';
 
       setFileName(extractedName);
-      onDataLoaded(data);
+
+      // If user is authenticated, save to Supabase
+      if (user) {
+        try {
+          const newMap = await saveToSupabase(data, extractedName);
+          if (newMap && onMapCreated) {
+            onMapCreated(newMap.id);
+          }
+        } catch (saveErr) {
+          setError(`File loaded but failed to save: ${saveErr.message}`);
+        }
+      } else {
+        // Not authenticated - just load locally
+        onDataLoaded(data);
+      }
     } catch (err) {
       // Handle CORS errors
       if (err.message.includes('Failed to fetch') || err.name === 'TypeError') {
@@ -176,7 +254,7 @@ function FileUpload({ onDataLoaded, onReset }) {
               className="hidden"
             />
             <span className="block w-full px-3 py-2 text-sm bg-blue-500 text-white rounded cursor-pointer hover:bg-blue-600 text-center">
-              {loading ? 'Loading...' : 'Upload KMZ/KML'}
+              {loading ? 'Loading...' : saving ? 'Saving...' : 'Upload KMZ/KML'}
             </span>
           </label>
 
@@ -203,10 +281,10 @@ function FileUpload({ onDataLoaded, onReset }) {
           <div className="flex gap-2">
             <button
               onClick={handleUrlLoad}
-              disabled={loading || !url.trim()}
+              disabled={loading || saving || !url.trim()}
               className="flex-1 px-3 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Loading...' : 'Load from URL'}
+              {loading ? 'Loading...' : saving ? 'Saving...' : 'Load from URL'}
             </button>
             {fileName && (
               <button
@@ -223,6 +301,7 @@ function FileUpload({ onDataLoaded, onReset }) {
       {fileName && (
         <div className="text-xs text-green-600">
           Loaded: {fileName}
+          {user && <span className="ml-1">(saved to maps)</span>}
         </div>
       )}
 
