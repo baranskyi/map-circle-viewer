@@ -32,19 +32,32 @@ export const useAuthStore = create((set, get) => ({
   // Sign in with email/password
   login: async (email, password) => {
     set({ loading: true, error: null });
-    const { data, error } = await signIn(email, password);
+    try {
+      const { data, error } = await signIn(email, password);
 
-    if (error) {
-      set({ error: error.message, loading: false });
-      return { error };
+      if (error) {
+        console.error('Login error:', error);
+        set({ error: error.message, loading: false });
+        return { error };
+      }
+
+      if (!data?.user) {
+        const msg = 'Подтвердите email перед входом (проверьте почту)';
+        set({ error: msg, loading: false });
+        return { error: { message: msg } };
+      }
+
+      set({
+        user: data.user,
+        session: data.session,
+        loading: false,
+      });
+      return { data };
+    } catch (err) {
+      console.error('Login exception:', err);
+      set({ error: err.message || 'Ошибка входа', loading: false });
+      return { error: err };
     }
-
-    set({
-      user: data.user,
-      session: data.session,
-      loading: false,
-    });
-    return { data };
   },
 
   // Sign up with email/password
