@@ -232,7 +232,14 @@ function MapApp() {
                 onChange={() => setShowMetro(!showMetro)}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">🚇 Метро Києва</span>
+              <span className="text-sm flex items-center gap-1">
+                🚇 Метро Києва
+                <span className="flex gap-0.5 ml-1">
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#E4181C' }} title="М1 Червона"></span>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#0072BC' }} title="М2 Синя"></span>
+                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#009E49' }} title="М3 Зелена"></span>
+                </span>
+              </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -241,7 +248,10 @@ function MapApp() {
                 onChange={() => setShowMalls(!showMalls)}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">🏬 Торгові центри</span>
+              <span className="text-sm flex items-center gap-1">
+                🏬 Торгові центри
+                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#9C27B0' }} title="ТЦ"></span>
+              </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer mt-2">
               <input
@@ -250,7 +260,10 @@ function MapApp() {
                 onChange={() => setShowFitness(!showFitness)}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">🏋️ Фітнес-клуби</span>
+              <span className="text-sm flex items-center gap-1">
+                🏋️ Фітнес-клуби
+                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#4CAF50' }} title="Фітнес"></span>
+              </span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer mt-2">
               <input
@@ -259,7 +272,10 @@ function MapApp() {
                 onChange={() => setShowSupermarkets(!showSupermarkets)}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm">🛒 Супермаркети</span>
+              <span className="text-sm flex items-center gap-1">
+                🛒 Супермаркети
+                <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#FF6B00' }} title="Супермаркети"></span>
+              </span>
             </label>
           </div>
 
