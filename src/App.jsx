@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.3.1';
+const APP_VERSION = '2.4.0';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -215,35 +215,75 @@ function MapApp() {
           {/* Map Selector (for authenticated users) */}
           {user && (
             <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-              <MapSelector onMapSelect={handleMapSelect} />
+              {/* Show map list only when no map selected */}
+              {!(currentMap && mode === 'supabase') && (
+                <MapSelector onMapSelect={handleMapSelect} />
+              )}
+
+              {/* Selected Map Content */}
               {currentMap && mode === 'supabase' && (
-                <div className="mt-2 pt-2 border-t border-blue-100">
-                  <div className="text-sm font-medium text-blue-700">{currentMap.name}</div>
-                  <button
-                    onClick={() => {
-                      setMode('local');
-                      useDataStore.getState().setCurrentMap(null);
-                    }}
-                    className="text-xs text-blue-500 hover:underline"
-                  >
-                    Закрити карту
-                  </button>
+                <div>
+                  {/* Map Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-bold text-blue-800 text-lg">{currentMap.name}</h3>
+                    <button
+                      onClick={() => {
+                        setMode('local');
+                        useDataStore.getState().setCurrentMap(null);
+                      }}
+                      className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
+                    >
+                      ← Назад до списку
+                    </button>
+                  </div>
+
+                  {/* Upload to this map */}
+                  <div className="mb-3 pb-3 border-b border-blue-200">
+                    <FileUpload
+                      onDataLoaded={handleDataLoaded}
+                      onReset={resetToDefault}
+                      onMapCreated={handleMapCreated}
+                      currentMapId={currentMap.id}
+                      onDataAddedToMap={handleDataAddedToMap}
+                    />
+                  </div>
+
+                  {/* Loading indicator */}
+                  {loading && (
+                    <div className="text-center py-2 text-gray-400 text-sm">
+                      Завантаження...
+                    </div>
+                  )}
+
+                  {/* Groups in this map */}
+                  <ControlPanel
+                    groups={normalizedGroups}
+                    groupSettings={groupSettings}
+                    onToggle={toggleGroup}
+                    onTogglePolygons={togglePolygons}
+                    onToggleLabels={toggleLabels}
+                    onRadiusChange={updateRadius}
+                    onColorChange={updateColor}
+                    onToggleAll={toggleAllGroups}
+                  />
                 </div>
               )}
             </div>
           )}
 
-          {/* File Upload (KMZ) */}
-          <FileUpload
-            onDataLoaded={handleDataLoaded}
-            onReset={resetToDefault}
-            onMapCreated={handleMapCreated}
-            currentMapId={mode === 'supabase' ? currentMap?.id : null}
-            onDataAddedToMap={handleDataAddedToMap}
-          />
+          {/* File Upload for local/non-auth mode */}
+          {(!user || mode === 'local') && !(currentMap && mode === 'supabase') && (
+            <FileUpload
+              onDataLoaded={handleDataLoaded}
+              onReset={resetToDefault}
+              onMapCreated={handleMapCreated}
+              currentMapId={null}
+              onDataAddedToMap={handleDataAddedToMap}
+            />
+          )}
 
-          {/* Loading indicator */}
-          {loading && (
+          {/* Loading indicator for local mode */}
+          {loading && mode === 'local' && (
             <div className="text-center py-2 text-gray-400 text-sm">
               Завантаження...
             </div>
@@ -430,17 +470,19 @@ function MapApp() {
             </div>
           </div>
 
-          {/* Control Panel */}
-          <ControlPanel
-            groups={normalizedGroups}
-            groupSettings={groupSettings}
-            onToggle={toggleGroup}
-            onTogglePolygons={togglePolygons}
-            onToggleLabels={toggleLabels}
-            onRadiusChange={updateRadius}
-            onColorChange={updateColor}
-            onToggleAll={toggleAllGroups}
-          />
+          {/* Control Panel - only for local mode (not when Supabase map selected) */}
+          {!(currentMap && mode === 'supabase') && (
+            <ControlPanel
+              groups={normalizedGroups}
+              groupSettings={groupSettings}
+              onToggle={toggleGroup}
+              onTogglePolygons={togglePolygons}
+              onToggleLabels={toggleLabels}
+              onRadiusChange={updateRadius}
+              onColorChange={updateColor}
+              onToggleAll={toggleAllGroups}
+            />
+          )}
 
           <div className="mt-4 pt-3 border-t text-xs text-gray-400 text-center">
             v{APP_VERSION} {mode === 'supabase' && '• Supabase'}
