@@ -3,6 +3,6 @@ export const defaultMapData = {
   groups: []
 };
 
-// Default map center (Almaty, Kazakhstan)
-export const defaultCenter = [43.235, 76.92];
-export const defaultZoom = 12;
+// Default map center (Kyiv, Ukraine)
+export const defaultCenter = [50.4501, 30.5234];
+export const defaultZoom = 11;

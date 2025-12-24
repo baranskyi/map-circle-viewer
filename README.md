@@ -10,7 +10,7 @@ Interactive web application for visualizing geographic points with customizable 
   - Radius: 1000m - 5000m (step: 500m)
   - Color picker with 50% fill opacity
   - Show/hide toggle
-- Upload your own KMZ/KML files
+- Upload your own KMZ/KML files or load from URL
 - Default data: Kazakhstan (Almaty) fitness locations
 
 ## Tech Stack
@@ -46,7 +46,7 @@ Output in `dist/` folder.
 ## Usage
 
 1. **Default Data**: App loads with pre-configured Kazakhstan data
-2. **Upload Custom Data**: Click "Upload KMZ/KML" to load your own file
+2. **Upload Custom Data**: Click "📁 File" to upload from disk or "🔗 URL" to load from web URL
 3. **Toggle Groups**: Use checkboxes to show/hide groups
 4. **Adjust Radius**: Slider controls circle size (1000-5000m)
 5. **Change Colors**: Color picker changes stroke and fill (50% opacity)

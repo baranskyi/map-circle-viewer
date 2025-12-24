@@ -1,5 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Circle, Polygon, Popup, Tooltip, useMap } from 'react-leaflet';
+import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer } from './POILayers';
 
 // Component to update map view only when center/zoom actually change
 function MapUpdater({ center, zoom }) {
@@ -21,7 +22,7 @@ function MapUpdater({ center, zoom }) {
   return null;
 }
 
-function MapView({ groups, groupSettings, center, zoom }) {
+function MapView({ groups, groupSettings, center, zoom, showMetro = true, showMalls = false, showFitness = false, showSupermarkets = false }) {
   return (
     <MapContainer
       center={center}
@@ -35,6 +36,12 @@ function MapView({ groups, groupSettings, center, zoom }) {
       />
 
       <MapUpdater center={center} zoom={zoom} />
+
+      {/* POI Layers */}
+      <MetroLayer visible={showMetro} />
+      <MallsLayer visible={showMalls} />
+      <FitnessLayer visible={showFitness} />
+      <SupermarketsLayer visible={showSupermarkets} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];
