@@ -18,24 +18,44 @@ body {
   width: 100%;
 }
 
-/* Style for permanent labels on circles and polygons */
-.point-label,
-.polygon-label {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  font-style: italic !important;
+/* Style for compact labels with semi-transparent background */
+.compact-label {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
   white-space: nowrap !important;
   color: #333 !important;
-  text-shadow:
-    -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-    -1px 1px 0 #fff,
-    1px 1px 0 #fff,
-    0 0 3px #fff !important;
+  max-width: 150px !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+.compact-label::before {
+  border-top-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Hide default marker icon styling */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+/* Legacy styles for backwards compatibility */
+.point-label,
+.polygon-label {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.15) !important;
+  border-radius: 3px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15) !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  white-space: nowrap !important;
+  color: #333 !important;
 }
 
 .point-label::before,

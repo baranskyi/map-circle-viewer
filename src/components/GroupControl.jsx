@@ -1,7 +1,17 @@
-function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange }) {
+// Available icon types
+const ICON_OPTIONS = [
+  { type: 'circle', label: '●', title: 'Круг' },
+  { type: 'square', label: '■', title: 'Квадрат' },
+  { type: 'diamond', label: '◆', title: 'Ромб' },
+  { type: 'pin', label: '▼', title: 'Пін' },
+  { type: 'star', label: '★', title: 'Зірка' }
+];
+
+function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange }) {
   if (!settings) return null;
 
   const hasPolygons = group.polygons && group.polygons.length > 0;
+  const currentIcon = settings.iconType || 'circle';
 
   return (
     <div className="border rounded-lg p-3 bg-gray-50">
@@ -73,6 +83,28 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
             <span className="text-xs text-gray-500 font-mono">
               {settings.color}
             </span>
+          </div>
+
+          {/* Icon selector */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 w-12">Icon:</label>
+            <div className="flex gap-1">
+              {ICON_OPTIONS.map(({ type, label, title }) => (
+                <button
+                  key={type}
+                  onClick={() => onIconChange && onIconChange(type)}
+                  title={title}
+                  className={`w-7 h-7 text-sm rounded flex items-center justify-center transition-colors ${
+                    currentIcon === type
+                      ? 'ring-2 ring-offset-1'
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                  style={currentIcon === type ? { backgroundColor: settings.color, color: 'white', ringColor: settings.color } : {}}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Labels toggle */}

@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.4.0';
+const APP_VERSION = '2.5.0';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -50,7 +50,8 @@ function MapApp() {
         polygonsVisible: true,
         labelsVisible: true,
         radius: group.default_radius || group.defaultRadius || 1000,
-        color: group.color || group.defaultColor || '#FF5252'
+        color: group.color || group.defaultColor || '#FF5252',
+        iconType: 'circle'
       };
     });
     setGroupSettings(settings);
@@ -146,6 +147,17 @@ function MapApp() {
       [groupId]: {
         ...prev[groupId],
         color
+      }
+    }));
+  };
+
+  // Update group icon type
+  const updateIcon = (groupId, iconType) => {
+    setGroupSettings(prev => ({
+      ...prev,
+      [groupId]: {
+        ...prev[groupId],
+        iconType
       }
     }));
   };
@@ -264,6 +276,7 @@ function MapApp() {
                     onToggleLabels={toggleLabels}
                     onRadiusChange={updateRadius}
                     onColorChange={updateColor}
+                    onIconChange={updateIcon}
                     onToggleAll={toggleAllGroups}
                   />
                 </div>
@@ -480,6 +493,7 @@ function MapApp() {
               onToggleLabels={toggleLabels}
               onRadiusChange={updateRadius}
               onColorChange={updateColor}
+              onIconChange={updateIcon}
               onToggleAll={toggleAllGroups}
             />
           )}
