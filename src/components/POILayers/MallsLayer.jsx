@@ -57,10 +57,9 @@ export default function MallsLayer({ visible = true, radius = 1000 }) {
             radius={radius}
             pathOptions={{
               color: MALL_COLOR,
-              weight: 2,
+              weight: 1,
               fillColor: MALL_COLOR,
               fillOpacity: 0.1,
-              dashArray: '5, 5',
             }}
           />
         ),

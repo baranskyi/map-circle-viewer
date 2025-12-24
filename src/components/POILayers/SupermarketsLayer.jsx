@@ -78,10 +78,9 @@ export default function SupermarketsLayer({ visible = true, radius = 500 }) {
               radius={radius}
               pathOptions={{
                 color: color,
-                weight: 2,
+                weight: 1,
                 fillColor: color,
                 fillOpacity: 0.1,
-                dashArray: '5, 5',
               }}
             />
           ),

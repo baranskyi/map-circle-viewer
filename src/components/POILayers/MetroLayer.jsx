@@ -71,10 +71,9 @@ export default function MetroLayer({ visible = true, radius = 500 }) {
               radius={radius}
               pathOptions={{
                 color: lineColor,
-                weight: 2,
+                weight: 1,
                 fillColor: lineColor,
                 fillOpacity: 0.1,
-                dashArray: '5, 5',
               }}
             />
           ),
