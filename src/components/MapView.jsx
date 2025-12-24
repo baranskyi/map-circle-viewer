@@ -3,6 +3,78 @@ import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, 
 import L from 'leaflet';
 import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer } from './POILayers';
 
+// Available map tile layers
+const TILE_LAYERS = {
+  osm: {
+    name: 'OpenStreetMap',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    icon: '🗺️'
+  },
+  googleStreets: {
+    name: 'Google Maps',
+    url: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps',
+    icon: '🛣️'
+  },
+  googleSatellite: {
+    name: 'Google Satellite',
+    url: 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps',
+    icon: '🛰️'
+  },
+  googleHybrid: {
+    name: 'Google Hybrid',
+    url: 'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    attribution: '&copy; Google Maps',
+    icon: '🌍'
+  }
+};
+
+// Layer switcher control component
+function LayerControl({ currentLayer, onLayerChange }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="leaflet-top leaflet-right" style={{ marginTop: '10px', marginRight: '10px' }}>
+      <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
+        <div className="relative">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="bg-white px-3 py-2 rounded-lg shadow-lg border border-gray-200 hover:bg-gray-50 flex items-center gap-2 text-sm font-medium"
+            title="Выбор карты"
+          >
+            <span>{TILE_LAYERS[currentLayer].icon}</span>
+            <span className="hidden sm:inline">{TILE_LAYERS[currentLayer].name}</span>
+            <span className="text-gray-400">▼</span>
+          </button>
+
+          {isOpen && (
+            <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px] z-[1000]">
+              {Object.entries(TILE_LAYERS).map(([key, layer]) => (
+                <button
+                  key={key}
+                  onClick={() => {
+                    onLayerChange(key);
+                    setIsOpen(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2 hover:bg-gray-100 ${
+                    currentLayer === key ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                  }`}
+                >
+                  <span>{layer.icon}</span>
+                  <span>{layer.name}</span>
+                  {currentLayer === key && <span className="ml-auto">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Icon types for markers
 const ICON_TYPES = {
   circle: (color) => L.divIcon({
@@ -77,6 +149,9 @@ function MapView({
   fitnessRadius = 500,
   supermarketsRadius = 500
 }) {
+  const [currentLayer, setCurrentLayer] = useState('osm');
+  const layer = TILE_LAYERS[currentLayer];
+
   return (
     <MapContainer
       center={center}
@@ -85,11 +160,16 @@ function MapView({
       zoomControl={true}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        key={currentLayer}
+        attribution={layer.attribution}
+        url={layer.url}
+        maxZoom={20}
       />
 
       <MapUpdater center={center} zoom={zoom} />
+
+      {/* Layer switcher control */}
+      <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
 
       {/* POI Layers */}
       <MetroLayer visible={showMetro} radius={metroRadius} />
