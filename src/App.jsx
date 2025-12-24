@@ -269,13 +269,13 @@ function MapApp() {
                     <span className="text-xs text-gray-500">м</span>
                   </div>
                   <div className="flex gap-1">
-                    {[500, 1000, 2000].map(r => (
+                    {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
                         onClick={() => setMetroRadius(r)}
                         className={`px-2 py-0.5 text-xs rounded ${metroRadius === r ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                       >
-                        {r}м
+                        {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
                   </div>
@@ -312,13 +312,13 @@ function MapApp() {
                     <span className="text-xs text-gray-500">м</span>
                   </div>
                   <div className="flex gap-1">
-                    {[500, 1000, 2000].map(r => (
+                    {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
                         onClick={() => setMallsRadius(r)}
                         className={`px-2 py-0.5 text-xs rounded ${mallsRadius === r ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                       >
-                        {r}м
+                        {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
                   </div>
@@ -355,13 +355,13 @@ function MapApp() {
                     <span className="text-xs text-gray-500">м</span>
                   </div>
                   <div className="flex gap-1">
-                    {[500, 1000, 2000].map(r => (
+                    {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
                         onClick={() => setFitnessRadius(r)}
                         className={`px-2 py-0.5 text-xs rounded ${fitnessRadius === r ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                       >
-                        {r}м
+                        {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
                   </div>
@@ -398,13 +398,13 @@ function MapApp() {
                     <span className="text-xs text-gray-500">м</span>
                   </div>
                   <div className="flex gap-1">
-                    {[500, 1000, 2000].map(r => (
+                    {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
                         onClick={() => setSupermarketsRadius(r)}
                         className={`px-2 py-0.5 text-xs rounded ${supermarketsRadius === r ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                       >
-                        {r}м
+                        {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
                   </div>
