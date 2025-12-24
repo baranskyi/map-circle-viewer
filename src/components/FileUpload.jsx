@@ -4,7 +4,7 @@ import { parseKMZ, parseKML } from '../utils/kmzParser';
 import { useAuthStore } from '../stores/authStore';
 import { mapsApi, groupsApi, pointsApi } from '../services/api';
 
-function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
+function FileUpload({ onDataLoaded, onReset, onMapCreated, currentMapId, onDataAddedToMap }) {
   const { user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -14,27 +14,35 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
   const [url, setUrl] = useState('');
   const fileInputRef = useRef(null);
 
-  // Save parsed data to Supabase
+  // Save parsed data to Supabase (either to existing map or create new)
   const saveToSupabase = async (data, name) => {
     if (!user) return null;
 
     setSaving(true);
     try {
-      // Create new map with filename
-      const mapName = name.replace(/\.(kmz|kml)$/i, '');
-      const newMap = await mapsApi.create({
-        name: mapName,
-        description: `Imported from ${name}`
-      });
+      let mapId = currentMapId;
+      let isNewMap = false;
+
+      // If no current map, create a new one
+      if (!mapId) {
+        const mapName = name.replace(/\.(kmz|kml)$/i, '');
+        const newMap = await mapsApi.create({
+          name: mapName,
+          description: `Imported from ${name}`
+        });
+        mapId = newMap.id;
+        isNewMap = true;
+      }
 
       // Create groups and points
       for (let i = 0; i < data.groups.length; i++) {
         const group = data.groups[i];
         const newGroup = await groupsApi.create({
-          map_id: newMap.id,
+          map_id: mapId,
           name: group.name,
           color: group.defaultColor || '#FF5252',
           default_radius: group.defaultRadius || 1000,
+          type: 'brand', // Must be 'brand', 'category' or 'poi'
           sort_order: i
         });
 
@@ -51,7 +59,7 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
         }
       }
 
-      return newMap;
+      return { mapId, isNewMap };
     } catch (err) {
       console.error('Error saving to Supabase:', err);
       throw err;
@@ -88,9 +96,13 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
       // If user is authenticated, save to Supabase
       if (user) {
         try {
-          const newMap = await saveToSupabase(data, file.name);
-          if (newMap && onMapCreated) {
-            onMapCreated(newMap.id);
+          const result = await saveToSupabase(data, file.name);
+          if (result) {
+            if (result.isNewMap && onMapCreated) {
+              onMapCreated(result.mapId);
+            } else if (!result.isNewMap && onDataAddedToMap) {
+              onDataAddedToMap(result.mapId);
+            }
           }
         } catch (saveErr) {
           setError(`File loaded but failed to save: ${saveErr.message}`);
@@ -182,9 +194,13 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
       // If user is authenticated, save to Supabase
       if (user) {
         try {
-          const newMap = await saveToSupabase(data, extractedName);
-          if (newMap && onMapCreated) {
-            onMapCreated(newMap.id);
+          const result = await saveToSupabase(data, extractedName);
+          if (result) {
+            if (result.isNewMap && onMapCreated) {
+              onMapCreated(result.mapId);
+            } else if (!result.isNewMap && onDataAddedToMap) {
+              onDataAddedToMap(result.mapId);
+            }
           }
         } catch (saveErr) {
           setError(`File loaded but failed to save: ${saveErr.message}`);
@@ -301,7 +317,8 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated }) {
       {fileName && (
         <div className="text-xs text-green-600">
           Loaded: {fileName}
-          {user && <span className="ml-1">(saved to maps)</span>}
+          {user && currentMapId && <span className="ml-1">(added to current map)</span>}
+          {user && !currentMapId && <span className="ml-1">(new map created)</span>}
         </div>
       )}
 

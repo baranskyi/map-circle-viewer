@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.3.0';
+const APP_VERSION = '2.3.1';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -87,6 +87,12 @@ function MapApp() {
     await fetchMaps();
     // Select the newly created map
     await handleMapSelect(mapId);
+  };
+
+  // Handle data added to existing map
+  const handleDataAddedToMap = async (mapId) => {
+    // Re-fetch the current map to get updated groups/points
+    await fetchMap(mapId);
   };
 
   // Toggle group visibility
@@ -232,6 +238,8 @@ function MapApp() {
             onDataLoaded={handleDataLoaded}
             onReset={resetToDefault}
             onMapCreated={handleMapCreated}
+            currentMapId={mode === 'supabase' ? currentMap?.id : null}
+            onDataAddedToMap={handleDataAddedToMap}
           />
 
           {/* Loading indicator */}
