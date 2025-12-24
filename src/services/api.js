@@ -131,8 +131,9 @@ export const groupsApi = {
         name: groupData.name,
         color: groupData.color || '#FF5252',
         default_radius: groupData.default_radius || 1000,
-        type: groupData.type || 'custom',
-        sort_order: groupData.sort_order || 0
+        type: groupData.type || 'brand',
+        sort_order: groupData.sort_order || 0,
+        polygons: groupData.polygons || []
       })
       .select()
       .single();
@@ -143,16 +144,20 @@ export const groupsApi = {
 
   // Update group
   async update(groupId, updates) {
+    const updateData = {
+      updated_at: new Date().toISOString()
+    };
+
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.color !== undefined) updateData.color = updates.color;
+    if (updates.default_radius !== undefined) updateData.default_radius = updates.default_radius;
+    if (updates.type !== undefined) updateData.type = updates.type;
+    if (updates.sort_order !== undefined) updateData.sort_order = updates.sort_order;
+    if (updates.polygons !== undefined) updateData.polygons = updates.polygons;
+
     const { data, error } = await supabase
       .from('groups')
-      .update({
-        name: updates.name,
-        color: updates.color,
-        default_radius: updates.default_radius,
-        type: updates.type,
-        sort_order: updates.sort_order,
-        updated_at: new Date().toISOString()
-      })
+      .update(updateData)
       .eq('id', groupId)
       .select()
       .single();

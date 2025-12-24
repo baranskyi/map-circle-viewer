@@ -34,16 +34,25 @@ function FileUpload({ onDataLoaded, onReset, onMapCreated, currentMapId, onDataA
         isNewMap = true;
       }
 
-      // Create groups and points
+      // Create groups with points and polygons
       for (let i = 0; i < data.groups.length; i++) {
         const group = data.groups[i];
+
+        // Prepare polygons data for storage
+        const polygonsData = (group.polygons || []).map(p => ({
+          name: p.name,
+          coordinates: p.coordinates,
+          color: p.color || group.defaultColor || '#000000'
+        }));
+
         const newGroup = await groupsApi.create({
           map_id: mapId,
           name: group.name,
           color: group.defaultColor || '#FF5252',
           default_radius: group.defaultRadius || 1000,
           type: 'brand', // Must be 'brand', 'category' or 'poi'
-          sort_order: i
+          sort_order: i,
+          polygons: polygonsData
         });
 
         // Create points for this group
