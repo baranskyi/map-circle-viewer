@@ -106,10 +106,23 @@ export default function VisiblePointsPanel({
                   onClick={() => onPointClick?.(point)}
                 >
                   <div className="flex items-center gap-2">
-                    <span
-                      className="w-2.5 h-2.5 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: point.color || '#666' }}
-                    />
+                    {point.icon ? (
+                      <span
+                        className="w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0 text-xs font-bold"
+                        style={{
+                          backgroundColor: point.color || '#666',
+                          color: 'white',
+                          fontSize: point.icon.length === 1 ? '10px' : '12px'
+                        }}
+                      >
+                        {point.icon}
+                      </span>
+                    ) : (
+                      <span
+                        className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: point.color || '#666' }}
+                      />
+                    )}
                     <span className="text-sm text-gray-700 truncate">{point.name}</span>
                   </div>
                 </div>

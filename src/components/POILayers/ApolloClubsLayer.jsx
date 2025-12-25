@@ -28,13 +28,30 @@ const apolloIcon = L.divIcon({
   popupAnchor: [0, -14]
 });
 
-export default function ApolloClubsLayer({ visible = true, radius = 500, opacity = 0.15 }) {
+export default function ApolloClubsLayer({ visible = true, radius = 500, opacity = 0.15, onDataLoaded }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchClubs();
   }, []);
+
+  // Report loaded data to parent
+  useEffect(() => {
+    if (!loading && onDataLoaded) {
+      onDataLoaded(clubs.map(c => ({
+        id: `apollo-${c.id}`,
+        name: c.name,
+        lat: c.lat,
+        lng: c.lng,
+        type: 'apollo',
+        typeName: 'APOLLO NEXT',
+        color: '#f97316',
+        icon: 'A',
+        extra: c.mall
+      })));
+    }
+  }, [clubs, loading, onDataLoaded]);
 
   const fetchClubs = async () => {
     try {

@@ -19,13 +19,30 @@ const BRAND_COLORS = {
   'default': '#607D8B'
 };
 
-export default function SupermarketsLayer({ visible = true, radius = 500, opacity = 0.15 }) {
+export default function SupermarketsLayer({ visible = true, radius = 500, opacity = 0.15, onDataLoaded }) {
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchSupermarkets();
   }, []);
+
+  // Report loaded data to parent
+  useEffect(() => {
+    if (!loading && onDataLoaded) {
+      onDataLoaded(markets.map(m => ({
+        id: `supermarket-${m.id}`,
+        name: m.name_uk || m.name,
+        lat: m.lat,
+        lng: m.lng,
+        type: 'supermarket',
+        typeName: 'Супермаркет',
+        color: BRAND_COLORS[m.brand] || BRAND_COLORS.default,
+        icon: '🛒',
+        extra: m.brand
+      })));
+    }
+  }, [markets, loading, onDataLoaded]);
 
   const fetchSupermarkets = async () => {
     try {

@@ -11,13 +11,30 @@ const BRAND_COLORS = {
   'default': '#4CAF50'
 };
 
-export default function FitnessLayer({ visible = true, radius = 500, opacity = 0.15 }) {
+export default function FitnessLayer({ visible = true, radius = 500, opacity = 0.15, onDataLoaded }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchFitnessClubs();
   }, []);
+
+  // Report loaded data to parent
+  useEffect(() => {
+    if (!loading && onDataLoaded) {
+      onDataLoaded(clubs.map(c => ({
+        id: `fitness-${c.id}`,
+        name: c.name_uk || c.name,
+        lat: c.lat,
+        lng: c.lng,
+        type: 'fitness',
+        typeName: 'Фітнес',
+        color: BRAND_COLORS[c.brand] || BRAND_COLORS.default,
+        icon: '🏋️',
+        extra: c.brand
+      })));
+    }
+  }, [clubs, loading, onDataLoaded]);
 
   const fetchFitnessClubs = async () => {
     try {

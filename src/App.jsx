@@ -16,7 +16,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.13.0 (Narwhal)';
+const APP_VERSION = '2.14.0 (Okapi)';
 
 function MapApp() {
   const { user } = useAuthStore();

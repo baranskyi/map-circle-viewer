@@ -2,6 +2,23 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.14.0] (Okapi) - 2025-12-25
+
+### Added
+- **All visible points in side panel** - now shows ALL infrastructure points (Metro, Apollo, Fitness, Malls, Supermarkets) not just user map points
+- **Infrastructure icons in panel** - each POI type has its own icon (М for Metro, A for Apollo, etc.)
+- **Type-based grouping** - points are grouped by type (Метро, APOLLO NEXT, Фітнес, ТРЦ, Супермаркет)
+
+### Changed
+- POI layers now report their points to parent for unified tracking
+- BoundsTracker tracks both user groups and all infrastructure points
+- New Okapi pixel art mascot for v2.14.x
+
+### Fixed
+- Right panel was showing 0 points even when many points visible on map
+
+---
+
 ## [2.13.0] (Narwhal) - 2025-12-25
 
 ### Added

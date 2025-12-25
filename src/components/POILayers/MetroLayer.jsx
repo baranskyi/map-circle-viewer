@@ -35,13 +35,30 @@ const createMetroIcon = (color) => L.divIcon({
   popupAnchor: [0, -12]
 });
 
-export default function MetroLayer({ visible = true, radius = 500, opacity = 0.15 }) {
+export default function MetroLayer({ visible = true, radius = 500, opacity = 0.15, onDataLoaded }) {
   const [stations, setStations] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMetroStations();
   }, []);
+
+  // Report loaded data to parent
+  useEffect(() => {
+    if (!loading && onDataLoaded) {
+      const metadata = stations[0]?.metadata || {};
+      onDataLoaded(stations.map(s => ({
+        id: `metro-${s.id}`,
+        name: s.name_uk || s.name,
+        lat: s.lat,
+        lng: s.lng,
+        type: 'metro',
+        typeName: 'Метро',
+        color: LINE_COLORS[s.metadata?.line] || '#666666',
+        icon: 'М'
+      })));
+    }
+  }, [stations, loading, onDataLoaded]);
 
   const fetchMetroStations = async () => {
     try {

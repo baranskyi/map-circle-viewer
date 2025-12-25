@@ -156,7 +156,7 @@ const getHighlightedIcon = (type, color) => {
 };
 
 // Component to track map bounds and report visible points
-function BoundsTracker({ groups, groupSettings, onVisiblePointsChange, onMapReady }) {
+function BoundsTracker({ groups, groupSettings, infrastructurePoints, onVisiblePointsChange, onMapReady }) {
   const map = useMapEvents({
     moveend: () => updateVisiblePoints(),
     zoomend: () => updateVisiblePoints(),
@@ -172,6 +172,7 @@ function BoundsTracker({ groups, groupSettings, onVisiblePointsChange, onMapRead
     const bounds = map.getBounds();
     const visiblePoints = [];
 
+    // Track user groups points
     groups.forEach(group => {
       const settings = groupSettings[group.id];
       if (!settings || !settings.visible) return;
@@ -185,18 +186,29 @@ function BoundsTracker({ groups, groupSettings, onVisiblePointsChange, onMapRead
             lng: point.lng,
             groupId: group.id,
             groupName: group.name,
-            color: settings.color
+            color: settings.color,
+            type: 'user'
           });
         }
       });
     });
 
+    // Track infrastructure points (already filtered by visibility in parent)
+    infrastructurePoints.forEach(point => {
+      if (bounds.contains([point.lat, point.lng])) {
+        visiblePoints.push({
+          ...point,
+          groupName: point.typeName
+        });
+      }
+    });
+
     onVisiblePointsChange?.(visiblePoints);
-  }, [map, groups, groupSettings, onVisiblePointsChange]);
+  }, [map, groups, groupSettings, infrastructurePoints, onVisiblePointsChange]);
 
   useEffect(() => {
     updateVisiblePoints();
-  }, [groups, groupSettings, updateVisiblePoints]);
+  }, [groups, groupSettings, infrastructurePoints, updateVisiblePoints]);
 
   useEffect(() => {
     if (map) {
@@ -260,6 +272,25 @@ function MapView({
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
 
+  // Infrastructure points storage
+  const [metroPoints, setMetroPoints] = useState([]);
+  const [mallPoints, setMallPoints] = useState([]);
+  const [fitnessPoints, setFitnessPoints] = useState([]);
+  const [supermarketPoints, setSupermarketPoints] = useState([]);
+  const [apolloPoints, setApolloPoints] = useState([]);
+
+  // Combine all infrastructure points based on visibility
+  const infrastructurePoints = useCallback(() => {
+    const points = [];
+    if (showMetro) points.push(...metroPoints);
+    if (showMalls) points.push(...mallPoints);
+    if (showFitness) points.push(...fitnessPoints);
+    if (showSupermarkets) points.push(...supermarketPoints);
+    if (showApolloClubs) points.push(...apolloPoints);
+    return points;
+  }, [showMetro, showMalls, showFitness, showSupermarkets, showApolloClubs,
+      metroPoints, mallPoints, fitnessPoints, supermarketPoints, apolloPoints]);
+
   return (
     <MapContainer
       center={center}
@@ -280,6 +311,7 @@ function MapView({
       <BoundsTracker
         groups={groups}
         groupSettings={groupSettings}
+        infrastructurePoints={infrastructurePoints()}
         onVisiblePointsChange={onVisiblePointsChange}
         onMapReady={onMapReady}
       />
@@ -288,13 +320,13 @@ function MapView({
       <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
 
       {/* POI Layers */}
-      <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} />
-      <MallsLayer visible={showMalls} radius={mallsRadius} opacity={mallsOpacity} />
-      <FitnessLayer visible={showFitness} radius={fitnessRadius} opacity={fitnessOpacity} />
-      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} opacity={supermarketsOpacity} />
+      <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} onDataLoaded={setMetroPoints} />
+      <MallsLayer visible={showMalls} radius={mallsRadius} opacity={mallsOpacity} onDataLoaded={setMallPoints} />
+      <FitnessLayer visible={showFitness} radius={fitnessRadius} opacity={fitnessOpacity} onDataLoaded={setFitnessPoints} />
+      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} opacity={supermarketsOpacity} onDataLoaded={setSupermarketPoints} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" opacityMultiplier={kyivstarActiveOpacity} />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" opacityMultiplier={kyivstarTerminatedOpacity} />
-      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} opacity={apolloClubsOpacity} />
+      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} opacity={apolloClubsOpacity} onDataLoaded={setApolloPoints} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

@@ -4,13 +4,29 @@ import { supabase } from '../../lib/supabase';
 
 const MALL_COLOR = '#9C27B0';
 
-export default function MallsLayer({ visible = true, radius = 1000, opacity = 0.15 }) {
+export default function MallsLayer({ visible = true, radius = 1000, opacity = 0.15, onDataLoaded }) {
   const [malls, setMalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMalls();
   }, []);
+
+  // Report loaded data to parent
+  useEffect(() => {
+    if (!loading && onDataLoaded) {
+      onDataLoaded(malls.map(m => ({
+        id: `mall-${m.id}`,
+        name: m.name_uk || m.name,
+        lat: m.lat,
+        lng: m.lng,
+        type: 'mall',
+        typeName: 'ТРЦ',
+        color: MALL_COLOR,
+        icon: '🏬'
+      })));
+    }
+  }, [malls, loading, onDataLoaded]);
 
   const fetchMalls = async () => {
     try {
