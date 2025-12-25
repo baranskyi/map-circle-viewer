@@ -442,3 +442,72 @@ export const mapAccessApi = {
     return data?.access_level;
   }
 };
+
+// ============================================
+// KYIVSTAR HEXAGONS API
+// ============================================
+
+export const kyivstarApi = {
+  // Get all hexagons
+  async getAll(layerName = null) {
+    let query = supabase
+      .from('kyivstar_hexagons')
+      .select('*');
+
+    if (layerName) {
+      query = query.eq('layer_name', layerName);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Get hexagons for active clients layer
+  async getActiveClients() {
+    return this.getAll('active_clients');
+  },
+
+  // Bulk insert hexagons (for data updates)
+  async bulkInsert(hexagons, sourceFile = null) {
+    const records = hexagons.map(hex => ({
+      hex_id: hex.hex_id,
+      coordinates: hex.coordinates,
+      layer_name: hex.layer_name || 'active_clients',
+      source_file: sourceFile
+    }));
+
+    const { data, error } = await supabase
+      .from('kyivstar_hexagons')
+      .insert(records)
+      .select();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Clear all hexagons (for full data refresh)
+  async clearAll(layerName = null) {
+    let query = supabase
+      .from('kyivstar_hexagons')
+      .delete();
+
+    if (layerName) {
+      query = query.eq('layer_name', layerName);
+    } else {
+      query = query.neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+    }
+
+    const { error } = await query;
+
+    if (error) throw error;
+    return true;
+  },
+
+  // Replace all hexagons (clear + insert)
+  async replaceAll(hexagons, sourceFile = null, layerName = 'active_clients') {
+    await this.clearAll(layerName);
+    return this.bulkInsert(hexagons, sourceFile);
+  }
+};

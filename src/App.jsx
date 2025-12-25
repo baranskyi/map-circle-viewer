@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.7.0';
+const APP_VERSION = '2.8.0';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -28,6 +28,7 @@ function MapApp() {
   const [showMalls, setShowMalls] = useState(false);
   const [showFitness, setShowFitness] = useState(false);
   const [showSupermarkets, setShowSupermarkets] = useState(false);
+  const [showKyivstar, setShowKyivstar] = useState(false);
 
   // POI Layer radius settings (in meters)
   const [metroRadius, setMetroRadius] = useState(500);
@@ -211,6 +212,7 @@ function MapApp() {
         showMalls={showMalls}
         showFitness={showFitness}
         showSupermarkets={showSupermarkets}
+        showKyivstar={showKyivstar}
         metroRadius={metroRadius}
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
@@ -440,7 +442,7 @@ function MapApp() {
             </div>
 
             {/* Supermarkets */}
-            <div>
+            <div className="mb-3 pb-3 border-b border-gray-200">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -478,6 +480,27 @@ function MapApp() {
                       </button>
                     ))}
                   </div>
+                </div>
+              )}
+            </div>
+
+            {/* Kyivstar zones */}
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showKyivstar}
+                  onChange={() => setShowKyivstar(!showKyivstar)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  📱 Kyivstar (зони клієнтів)
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#22c55e' }} title="Kyivstar zones"></span>
+                </span>
+              </label>
+              {showKyivstar && (
+                <div className="mt-2 ml-6 text-xs text-gray-500">
+                  Гексагони з даними Kyivstar про місце проживання клієнтів
                 </div>
               )}
             </div>
