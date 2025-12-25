@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.15.4] (Puffin) - 2025-12-25
+
+### Changed
+- **Removed zoom controls** - +/- buttons removed from map for cleaner UI
+- **Unified panel positions** - left panel now at same height as right panel (top-4)
+- **Layer switcher aligned** - positioned at top level with panels
+
+---
+
 ## [2.15.3] (Puffin) - 2025-12-25
 
 ### Fixed
