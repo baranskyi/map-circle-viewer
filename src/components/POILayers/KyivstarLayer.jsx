@@ -4,26 +4,25 @@ import { kyivstarApi } from '../../services/api';
 
 // Color gradient for hexagons based on total people count
 // Darker green = more people
-const getHexagonColor = (totalPeople, fillColor) => {
-  // Use original fill color from Kyivstar if available
-  if (fillColor && fillColor !== '#22c55e') {
-    return fillColor;
-  }
-
-  // Fallback gradient based on count
-  if (totalPeople >= 100) return '#1e6422';  // Darkest green
-  if (totalPeople >= 50) return '#419a44';
-  if (totalPeople >= 25) return '#72b574';
-  if (totalPeople >= 10) return '#a3d0a7';
-  return '#d4edda';  // Lightest green
+const getHexagonColor = (totalPeople) => {
+  if (totalPeople >= 100) return '#0d5016';  // Darkest green
+  if (totalPeople >= 50) return '#166b1e';
+  if (totalPeople >= 30) return '#1e8527';
+  if (totalPeople >= 20) return '#28a745';
+  if (totalPeople >= 10) return '#3cb556';
+  if (totalPeople >= 5) return '#5bc472';
+  return '#7ed694';  // Lightest green (but still visible)
 };
 
-// Get opacity based on count
+// Get opacity based on count - much higher values
 const getOpacity = (totalPeople) => {
-  if (totalPeople >= 50) return 0.5;
-  if (totalPeople >= 20) return 0.4;
-  if (totalPeople >= 10) return 0.35;
-  return 0.25;
+  if (totalPeople >= 100) return 0.75;
+  if (totalPeople >= 50) return 0.65;
+  if (totalPeople >= 30) return 0.55;
+  if (totalPeople >= 20) return 0.5;
+  if (totalPeople >= 10) return 0.45;
+  if (totalPeople >= 5) return 0.4;
+  return 0.35;
 };
 
 export default function KyivstarLayer({ visible = true }) {
@@ -52,7 +51,7 @@ export default function KyivstarLayer({ visible = true }) {
       {hexagons.map((hexagon) => {
         const coordinates = hexagon.coordinates || [];
         const totalPeople = hexagon.total_people || 0;
-        const fillColor = getHexagonColor(totalPeople, hexagon.fill_color);
+        const fillColor = getHexagonColor(totalPeople);
         const fillOpacity = getOpacity(totalPeople);
         const gyms = hexagon.gyms || [];
 
