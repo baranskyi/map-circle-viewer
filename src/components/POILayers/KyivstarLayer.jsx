@@ -2,19 +2,37 @@ import { useEffect, useState } from 'react';
 import { Polygon, Popup } from 'react-leaflet';
 import { kyivstarApi } from '../../services/api';
 
-// Color gradient for hexagons based on total people count
-// Darker green = more people
-const getHexagonColor = (totalPeople) => {
-  if (totalPeople >= 100) return '#0d5016';  // Darkest green
-  if (totalPeople >= 50) return '#166b1e';
-  if (totalPeople >= 30) return '#1e8527';
-  if (totalPeople >= 20) return '#28a745';
-  if (totalPeople >= 10) return '#3cb556';
-  if (totalPeople >= 5) return '#5bc472';
-  return '#7ed694';  // Lightest green (but still visible)
+// Color gradients for different layer types
+const LAYER_COLORS = {
+  active_clients: {
+    // Green gradient - darker = more people
+    getColor: (totalPeople) => {
+      if (totalPeople >= 100) return '#0d5016';
+      if (totalPeople >= 50) return '#166b1e';
+      if (totalPeople >= 30) return '#1e8527';
+      if (totalPeople >= 20) return '#28a745';
+      if (totalPeople >= 10) return '#3cb556';
+      if (totalPeople >= 5) return '#5bc472';
+      return '#7ed694';
+    },
+    badge: { bg: '#22c55e', text: '🟢 Діючі клієнти' }
+  },
+  terminated_clients: {
+    // Red gradient - darker = more people
+    getColor: (totalPeople) => {
+      if (totalPeople >= 100) return '#7f1d1d';
+      if (totalPeople >= 50) return '#991b1b';
+      if (totalPeople >= 30) return '#b91c1c';
+      if (totalPeople >= 20) return '#dc2626';
+      if (totalPeople >= 10) return '#ef4444';
+      if (totalPeople >= 5) return '#f87171';
+      return '#fca5a5';
+    },
+    badge: { bg: '#dc2626', text: '🔴 Завершені клієнти' }
+  }
 };
 
-// Get opacity based on count - much higher values
+// Get opacity based on count - same for both layers
 const getOpacity = (totalPeople) => {
   if (totalPeople >= 100) return 0.75;
   if (totalPeople >= 50) return 0.65;
@@ -25,33 +43,38 @@ const getOpacity = (totalPeople) => {
   return 0.35;
 };
 
-export default function KyivstarLayer({ visible = true }) {
+export default function KyivstarLayer({ visible = true, layerType = 'active_clients' }) {
   const [hexagons, setHexagons] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchHexagons();
-  }, []);
+  }, [layerType]);
 
   const fetchHexagons = async () => {
     try {
-      const data = await kyivstarApi.getActiveClients();
+      setLoading(true);
+      const data = layerType === 'terminated_clients'
+        ? await kyivstarApi.getTerminatedClients()
+        : await kyivstarApi.getActiveClients();
       setHexagons(data || []);
       setLoading(false);
     } catch (err) {
-      console.error('Error fetching Kyivstar hexagons:', err);
+      console.error(`Error fetching Kyivstar hexagons (${layerType}):`, err);
       setLoading(false);
     }
   };
 
   if (!visible || loading) return null;
 
+  const layerConfig = LAYER_COLORS[layerType] || LAYER_COLORS.active_clients;
+
   return (
     <>
       {hexagons.map((hexagon) => {
         const coordinates = hexagon.coordinates || [];
         const totalPeople = hexagon.total_people || 0;
-        const fillColor = getHexagonColor(totalPeople);
+        const fillColor = layerConfig.getColor(totalPeople);
         const fillOpacity = getOpacity(totalPeople);
         const gyms = hexagon.gyms || [];
 
@@ -78,9 +101,9 @@ export default function KyivstarLayer({ visible = true }) {
                 {/* Badge */}
                 <div
                   className="py-1 px-2 rounded text-white text-center text-xs font-bold mb-2"
-                  style={{ backgroundColor: '#22c55e' }}
+                  style={{ backgroundColor: layerConfig.badge.bg }}
                 >
-                  🟢 Діючі клієнти
+                  {layerConfig.badge.text}
                 </div>
 
                 {/* Statistics */}
@@ -104,7 +127,7 @@ export default function KyivstarLayer({ visible = true }) {
                       </tr>
                       <tr style={{ borderTop: '1px solid #dee2e6' }}>
                         <td className="py-0.5 font-bold">📊 Всього:</td>
-                        <td className="text-right font-bold" style={{ color: '#22c55e' }}>
+                        <td className="text-right font-bold" style={{ color: layerConfig.badge.bg }}>
                           {totalPeople}
                         </td>
                       </tr>
@@ -123,13 +146,13 @@ export default function KyivstarLayer({ visible = true }) {
                         <div
                           key={idx}
                           className="my-1 p-1.5 bg-white rounded text-xs"
-                          style={{ borderLeft: '3px solid #22c55e' }}
+                          style={{ borderLeft: `3px solid ${layerConfig.badge.bg}` }}
                         >
                           <div className="font-bold text-gray-700 text-xs leading-tight">
                             📍 {gym.address}
                           </div>
                           <div className="mt-0.5">
-                            <span className="font-bold" style={{ color: '#22c55e' }}>
+                            <span className="font-bold" style={{ color: layerConfig.badge.bg }}>
                               {gym.count} чол.
                             </span>
                             {(gym.home !== undefined) && (

@@ -469,6 +469,11 @@ export const kyivstarApi = {
     return this.getAll('active_clients');
   },
 
+  // Get hexagons for terminated clients layer
+  async getTerminatedClients() {
+    return this.getAll('terminated_clients');
+  },
+
   // Bulk insert hexagons (for data updates)
   async bulkInsert(hexagons, sourceFile = null) {
     const records = hexagons.map(hex => ({

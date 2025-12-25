@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.8.1';
+const APP_VERSION = '2.9.0';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -28,7 +28,8 @@ function MapApp() {
   const [showMalls, setShowMalls] = useState(false);
   const [showFitness, setShowFitness] = useState(false);
   const [showSupermarkets, setShowSupermarkets] = useState(false);
-  const [showKyivstar, setShowKyivstar] = useState(false);
+  const [showKyivstarActive, setShowKyivstarActive] = useState(false);
+  const [showKyivstarTerminated, setShowKyivstarTerminated] = useState(false);
 
   // POI Layer radius settings (in meters)
   const [metroRadius, setMetroRadius] = useState(500);
@@ -212,7 +213,8 @@ function MapApp() {
         showMalls={showMalls}
         showFitness={showFitness}
         showSupermarkets={showSupermarkets}
-        showKyivstar={showKyivstar}
+        showKyivstarActive={showKyivstarActive}
+        showKyivstarTerminated={showKyivstarTerminated}
         metroRadius={metroRadius}
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
@@ -484,23 +486,44 @@ function MapApp() {
               )}
             </div>
 
-            {/* Kyivstar zones */}
+            {/* Kyivstar Active Clients */}
+            <div className="mb-3 pb-3 border-b border-gray-200">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showKyivstarActive}
+                  onChange={() => setShowKyivstarActive(!showKyivstarActive)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🟢 Kyivstar: Діючі клієнти
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#22c55e' }} title="Active clients"></span>
+                </span>
+              </label>
+              {showKyivstarActive && (
+                <div className="mt-2 ml-6 text-xs text-gray-500">
+                  390 гексагонів, 9190 клієнтів
+                </div>
+              )}
+            </div>
+
+            {/* Kyivstar Terminated Clients */}
             <div>
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={showKyivstar}
-                  onChange={() => setShowKyivstar(!showKyivstar)}
+                  checked={showKyivstarTerminated}
+                  onChange={() => setShowKyivstarTerminated(!showKyivstarTerminated)}
                   className="w-4 h-4 rounded border-gray-300"
                 />
                 <span className="text-sm flex items-center gap-1">
-                  📱 Kyivstar (зони клієнтів)
-                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#22c55e' }} title="Kyivstar zones"></span>
+                  🔴 Kyivstar: Завершені клієнти
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#dc2626' }} title="Terminated clients"></span>
                 </span>
               </label>
-              {showKyivstar && (
+              {showKyivstarTerminated && (
                 <div className="mt-2 ml-6 text-xs text-gray-500">
-                  Гексагони з даними Kyivstar про місце проживання клієнтів
+                  878 гексагонів, 37605 клієнтів
                 </div>
               )}
             </div>

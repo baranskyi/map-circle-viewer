@@ -144,7 +144,8 @@ function MapView({
   showMalls = false,
   showFitness = false,
   showSupermarkets = false,
-  showKyivstar = false,
+  showKyivstarActive = false,
+  showKyivstarTerminated = false,
   metroRadius = 500,
   mallsRadius = 1000,
   fitnessRadius = 500,
@@ -177,7 +178,8 @@ function MapView({
       <MallsLayer visible={showMalls} radius={mallsRadius} />
       <FitnessLayer visible={showFitness} radius={fitnessRadius} />
       <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} />
-      <KyivstarLayer visible={showKyivstar} />
+      <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" />
+      <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

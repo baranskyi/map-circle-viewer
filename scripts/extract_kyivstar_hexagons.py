@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """
 Extract Kyivstar hexagons from Folium HTML map.
-Extracts the "Діючі клієнти Apollo" layer and converts to JSON for Supabase.
-Now includes statistics and color data from popups.
+Extracts both "Діючі клієнти Apollo" and "Завершені клієнти Apollo" layers.
 
 Usage:
     python3 extract_kyivstar_hexagons.py <input_html> [output_json]
@@ -27,8 +26,6 @@ class PopupHTMLParser(HTMLParser):
         }
         self.gyms = []
         self.current_gym = None
-        self.in_gym_name = False
-        self.in_gym_stats = False
         self.capture_next = None
 
     def handle_data(self, data):
@@ -53,11 +50,9 @@ class PopupHTMLParser(HTMLParser):
         if '📍' in data:
             self.current_gym = {'address': data.replace('📍 ', '').strip()}
         elif self.current_gym and 'чол.' in data:
-            # Extract count: "11 чол. (100.0%)"
             match = re.search(r'(\d+)\s*чол\.', data)
             if match:
                 self.current_gym['count'] = int(match.group(1))
-            # Extract breakdown
             breakdown_match = re.search(r'🏠(\d+)\s*🏢(\d+)\s*🏠🏢(\d+)', data)
             if breakdown_match:
                 self.current_gym['home'] = int(breakdown_match.group(1))
@@ -80,62 +75,39 @@ def parse_popup_html(html_content: str) -> dict:
     }
 
 
-def extract_hexagons(html_content: str, target_feature_group: str) -> list:
-    """
-    Extract hexagon polygons from HTML that belong to a specific feature group.
-    Now includes color and statistics.
-    """
+def extract_hexagons(html_content: str, target_feature_group: str, layer_name: str) -> list:
+    """Extract hexagon polygons from HTML that belong to a specific feature group."""
     hexagons = []
 
-    # Find all geo_json variable names that are added to the target feature group
     addto_pattern = rf'(geo_json_[a-f0-9]+)\.addTo\({target_feature_group}\)'
     geo_json_vars = re.findall(addto_pattern, html_content)
 
     print(f"Found {len(geo_json_vars)} geo_json objects in {target_feature_group}")
 
-    # Build a map of geo_json_var -> fillColor
-    color_map = {}
-    color_pattern = r'var\s+(geo_json_[a-f0-9]+)\s*=.*?"fillColor":\s*"([^"]+)"'
-    for match in re.finditer(color_pattern, html_content, re.DOTALL):
-        var_name = match.group(1)
-        fill_color = match.group(2)
-        color_map[var_name] = fill_color
-
-    # Build a map of geo_json_var -> popup content
+    # Build popup maps
     popup_map = {}
-    # First find popup var -> geo_json var mapping
     popup_binding_pattern = r'(geo_json_[a-f0-9]+)\.bindPopup\((popup_[a-f0-9]+)\)'
     for match in re.finditer(popup_binding_pattern, html_content):
-        geo_var = match.group(1)
-        popup_var = match.group(2)
-        popup_map[geo_var] = popup_var
+        popup_map[match.group(1)] = match.group(2)
 
-    # Then find popup var -> html var mapping and html content
     popup_content_map = {}
     html_pattern = r'var\s+(html_[a-f0-9]+)\s*=\s*\$\(`([^`]+)`\)'
     for match in re.finditer(html_pattern, html_content, re.DOTALL):
-        html_var = match.group(1)
-        html_content_str = match.group(2)
-        popup_content_map[html_var] = html_content_str
+        popup_content_map[match.group(1)] = match.group(2)
 
-    popup_to_html_pattern = r'(popup_[a-f0-9]+)\.setContent\((html_[a-f0-9]+)\)'
     popup_html_map = {}
+    popup_to_html_pattern = r'(popup_[a-f0-9]+)\.setContent\((html_[a-f0-9]+)\)'
     for match in re.finditer(popup_to_html_pattern, html_content):
-        popup_var = match.group(1)
-        html_var = match.group(2)
-        if html_var in popup_content_map:
-            popup_html_map[popup_var] = popup_content_map[html_var]
+        if match.group(2) in popup_content_map:
+            popup_html_map[match.group(1)] = popup_content_map[match.group(2)]
 
-    # For each geo_json variable, find its data
     for geo_json_var in geo_json_vars:
-        # Pattern to find the geo_json_xxx_add call with its GeoJSON data
         data_pattern = rf'{geo_json_var}_add\((\{{"features".*?"type":\s*"FeatureCollection"\}})\)'
         match = re.search(data_pattern, html_content)
 
         if match:
             try:
-                geojson_str = match.group(1)
-                geojson = json.loads(geojson_str)
+                geojson = json.loads(match.group(1))
 
                 for feature in geojson.get('features', []):
                     if feature.get('type') == 'Feature':
@@ -143,17 +115,10 @@ def extract_hexagons(html_content: str, target_feature_group: str) -> list:
                         properties = feature.get('properties', {})
 
                         if geometry.get('type') == 'Polygon':
-                            # GeoJSON coordinates are [lng, lat], Leaflet expects [lat, lng]
                             raw_coords = geometry.get('coordinates', [[]])[0]
-                            # Convert [lng, lat] to [lat, lng]
                             coords = [[coord[1], coord[0]] for coord in raw_coords]
-
                             hex_id = properties.get('hex_id', '')
 
-                            # Get color
-                            fill_color = color_map.get(geo_json_var, '#22c55e')
-
-                            # Get popup statistics
                             stats = {'home_only': 0, 'work_only': 0, 'home_and_work': 0, 'total': 0}
                             gyms = []
                             if geo_json_var in popup_map:
@@ -166,7 +131,7 @@ def extract_hexagons(html_content: str, target_feature_group: str) -> list:
                             hexagons.append({
                                 'hex_id': hex_id,
                                 'coordinates': coords,
-                                'fill_color': fill_color,
+                                'layer_name': layer_name,
                                 'stats': stats,
                                 'gyms': gyms
                             })
@@ -176,11 +141,11 @@ def extract_hexagons(html_content: str, target_feature_group: str) -> list:
     return hexagons
 
 
-def find_feature_group_for_layer(html_content: str, layer_name: str) -> str | None:
-    """
-    Find the feature group variable name for a given layer name.
-    """
-    # Find all feature groups with "Apollo" in their layer name
+def find_feature_groups(html_content: str) -> dict:
+    """Find feature groups for both active and terminated clients layers."""
+    layers = {}
+
+    # Pattern to find all Apollo layers
     pattern = r'"([^"]*Apollo[^"]*)"\s*:\s*(feature_group_[a-f0-9]+)'
     matches = re.findall(pattern, html_content)
 
@@ -188,24 +153,20 @@ def find_feature_group_for_layer(html_content: str, layer_name: str) -> str | No
         try:
             decoded = layer_text.encode().decode('unicode_escape')
             if 'Діючі' in decoded or '\U0001f7e2' in decoded:
-                return feature_group
+                layers['active_clients'] = feature_group
+                print(f"Found active clients layer: {feature_group}")
+            elif 'Завершені' in decoded or '\U0001f534' in decoded:
+                layers['terminated_clients'] = feature_group
+                print(f"Found terminated clients layer: {feature_group}")
         except:
             pass
 
-    # Fallback: look for green circle emoji pattern directly
-    green_pattern = r'"\\ud83d\\udfe2[^"]*"\s*:\s*(feature_group_[a-f0-9]+)'
-    match = re.search(green_pattern, html_content)
-    if match:
-        return match.group(1)
-
-    return None
+    return layers
 
 
 def main():
     if len(sys.argv) < 2:
         print("Usage: python3 extract_kyivstar_hexagons.py <input_html> [output_json]")
-        print("\nExample:")
-        print("  python3 extract_kyivstar_hexagons.py 'hexagon_heatmap.html' hexagons.json")
         sys.exit(1)
 
     input_file = Path(sys.argv[1])
@@ -218,58 +179,46 @@ def main():
     print(f"Reading {input_file}...")
     html_content = input_file.read_text(encoding='utf-8')
 
-    # Find the feature group for "Діючі клієнти Apollo"
-    layer_name = "Діючі клієнти Apollo"
-    feature_group = find_feature_group_for_layer(html_content, layer_name)
+    # Find both layers
+    layers = find_feature_groups(html_content)
 
-    if not feature_group:
-        print(f"Error: Could not find feature group for layer '{layer_name}'")
-        layers_pattern = r'overlays\s*:\s*\{([^}]+)\}'
-        layers_match = re.search(layers_pattern, html_content)
-        if layers_match:
-            print("\nAvailable layers:")
-            print(layers_match.group(1))
+    if not layers:
+        print("Error: Could not find any Apollo client layers")
         sys.exit(1)
 
-    print(f"Found feature group: {feature_group}")
+    all_hexagons = []
 
-    # Extract hexagons
-    hexagons = extract_hexagons(html_content, feature_group)
+    # Extract active clients
+    if 'active_clients' in layers:
+        print("\nExtracting active clients...")
+        active = extract_hexagons(html_content, layers['active_clients'], 'active_clients')
+        all_hexagons.extend(active)
+        total_active = sum(h['stats']['total'] for h in active)
+        print(f"Active clients: {len(active)} hexagons, {total_active} people")
 
-    if not hexagons:
+    # Extract terminated clients
+    if 'terminated_clients' in layers:
+        print("\nExtracting terminated clients...")
+        terminated = extract_hexagons(html_content, layers['terminated_clients'], 'terminated_clients')
+        all_hexagons.extend(terminated)
+        total_terminated = sum(h['stats']['total'] for h in terminated)
+        print(f"Terminated clients: {len(terminated)} hexagons, {total_terminated} people")
+
+    if not all_hexagons:
         print("Warning: No hexagons found!")
         sys.exit(1)
 
-    print(f"Extracted {len(hexagons)} hexagons")
-
-    # Calculate stats
-    total_people = sum(h['stats']['total'] for h in hexagons)
-    with_stats = sum(1 for h in hexagons if h['stats']['total'] > 0)
-    print(f"Total people: {total_people}, hexagons with stats: {with_stats}")
+    print(f"\nTotal: {len(all_hexagons)} hexagons")
 
     # Save to JSON
     output_data = {
-        'layer_name': 'active_clients',
         'source': str(input_file.name),
-        'count': len(hexagons),
-        'total_people': total_people,
-        'hexagons': hexagons
+        'count': len(all_hexagons),
+        'hexagons': all_hexagons
     }
 
     output_file.write_text(json.dumps(output_data, indent=2, ensure_ascii=False), encoding='utf-8')
     print(f"Saved to {output_file}")
-
-    # Print sample
-    if hexagons:
-        print(f"\nSample hexagon:")
-        sample = hexagons[0]
-        print(json.dumps({
-            'hex_id': sample['hex_id'],
-            'fill_color': sample['fill_color'],
-            'stats': sample['stats'],
-            'gyms_count': len(sample['gyms']),
-            'coordinates_count': len(sample['coordinates'])
-        }, indent=2))
 
 
 if __name__ == '__main__':
