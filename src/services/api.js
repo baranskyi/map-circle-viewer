@@ -545,3 +545,62 @@ export const apolloClubsApi = {
     return data;
   }
 };
+
+// ============================================
+// USER PREFERENCES API
+// ============================================
+
+export const userPreferencesApi = {
+  // Get a preference by key
+  async get(key) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('preference_value')
+      .eq('user_id', user.id)
+      .eq('preference_key', key)
+      .single();
+
+    if (error) return null;
+    return data?.preference_value;
+  },
+
+  // Set a preference
+  async set(key, value) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .upsert({
+        user_id: user.id,
+        preference_key: key,
+        preference_value: value,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,preference_key'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Delete a preference
+  async delete(key) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+
+    const { error } = await supabase
+      .from('user_preferences')
+      .delete()
+      .eq('user_id', user.id)
+      .eq('preference_key', key);
+
+    if (error) throw error;
+    return true;
+  }
+};

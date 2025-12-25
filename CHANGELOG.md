@@ -2,6 +2,19 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.12.0] (Pangolin) - 2025-12-25
+
+### Added
+- **Draggable infrastructure cards** - reorder layers by drag-and-drop
+- Layer order **saved to user account** (Supabase for authenticated users, localStorage for guests)
+- Visual drag handle with grab cursor for each layer card
+
+### Changed
+- Infrastructure layers now use unified `DraggableInfrastructure` component
+- Improved layer card design with drag state visual feedback
+
+---
+
 ## [2.11.0] (Axolotl) - 2025-12-25
 
 ### Added
