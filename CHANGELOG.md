@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.15.3] (Puffin) - 2025-12-25
+
+### Fixed
+- **Left panel moved below zoom buttons** - panel starts at 90px from top, clear of +/- controls
+- **Layer switcher repositioned** - now at 80px from top, moves with panel collapse
+- **Improved collapse button** - larger double-chevron icon (<<) with hover effect
+
+---
+
 ## [2.15.2] (Puffin) - 2025-12-25
 
 ### Fixed

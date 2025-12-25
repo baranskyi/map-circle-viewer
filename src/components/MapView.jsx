@@ -36,12 +36,13 @@ function LayerControl({ currentLayer, onLayerChange, leftPanelCollapsed }) {
   const [isOpen, setIsOpen] = useState(false);
 
   // Position depends on left panel state
-  // When collapsed: next to hamburger (left: ~60px)
-  // When expanded: next to panel (left: ~350px)
-  const leftPosition = leftPanelCollapsed ? '60px' : '350px';
+  // Always below zoom buttons (top ~10px from default leaflet-top)
+  // When collapsed: left edge (10px)
+  // When expanded: to the right of panel (340px)
+  const leftPosition = leftPanelCollapsed ? '10px' : '340px';
 
   return (
-    <div className="leaflet-top leaflet-left" style={{ marginTop: '10px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '80px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
       <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
         <div className="relative">
           <button
