@@ -150,7 +150,8 @@ function MapView({
   metroRadius = 500,
   mallsRadius = 1000,
   fitnessRadius = 500,
-  supermarketsRadius = 500
+  supermarketsRadius = 500,
+  apolloClubsRadius = 500
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
@@ -181,7 +182,7 @@ function MapView({
       <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" />
-      <ApolloClubsLayer visible={showApolloClubs} />
+      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

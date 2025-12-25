@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.10.1] (Quokka) - 2025-12-25
+
+### Added
+- **Radius control for Apollo clubs** - adjustable coverage circles (0-2000m)
+- Quick buttons: Вимк, 500м, 1000м, 2000м
+- Manual input for custom radius values
+
+---
+
 ## [2.10.0] (Capybara) - 2025-12-25
 
 ### Added

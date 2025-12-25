@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.10.0 (Capybara)';
+const APP_VERSION = '2.10.1 (Quokka)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -37,6 +37,7 @@ function MapApp() {
   const [mallsRadius, setMallsRadius] = useState(1000);
   const [fitnessRadius, setFitnessRadius] = useState(500);
   const [supermarketsRadius, setSupermarketsRadius] = useState(500);
+  const [apolloClubsRadius, setApolloClubsRadius] = useState(500);
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -221,6 +222,7 @@ function MapApp() {
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
         supermarketsRadius={supermarketsRadius}
+        apolloClubsRadius={apolloClubsRadius}
       />
 
       <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">
@@ -545,8 +547,31 @@ function MapApp() {
                 </span>
               </label>
               {showApolloClubs && (
-                <div className="mt-2 ml-6 text-xs text-gray-500">
-                  19 клубів у 6 містах
+                <div className="mt-2 ml-6">
+                  <div className="text-xs text-gray-500 mb-2">19 клубів у 6 містах</div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <input
+                      type="number"
+                      min="0"
+                      max="2000"
+                      step="100"
+                      value={apolloClubsRadius}
+                      onChange={(e) => setApolloClubsRadius(Math.min(2000, Math.max(0, parseInt(e.target.value) || 0)))}
+                      className="w-16 px-2 py-1 text-xs border border-gray-300 rounded"
+                    />
+                    <span className="text-xs text-gray-500">м</span>
+                  </div>
+                  <div className="flex gap-1">
+                    {[0, 500, 1000, 2000].map(r => (
+                      <button
+                        key={r}
+                        onClick={() => setApolloClubsRadius(r)}
+                        className={`px-2 py-0.5 text-xs rounded ${apolloClubsRadius === r ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                      >
+                        {r === 0 ? 'Вимк' : `${r}м`}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

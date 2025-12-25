@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker, Circle, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { apolloClubsApi } from '../../services/api';
 
@@ -28,7 +28,7 @@ const apolloIcon = L.divIcon({
   popupAnchor: [0, -14]
 });
 
-export default function ApolloClubsLayer({ visible = true }) {
+export default function ApolloClubsLayer({ visible = true, radius = 500 }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -53,51 +53,66 @@ export default function ApolloClubsLayer({ visible = true }) {
   return (
     <>
       {clubs.map((club) => (
-        <Marker
-          key={club.id}
-          position={[club.lat, club.lng]}
-          icon={apolloIcon}
-        >
-          <Popup maxWidth={300}>
-            <div className="font-sans text-xs" style={{ minWidth: '200px' }}>
-              {/* Header */}
-              <div
-                className="py-2 px-3 rounded-t text-white font-bold text-sm"
-                style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
-              >
-                {club.name}
-              </div>
-
-              {/* Content */}
-              <div className="p-2 bg-gray-50">
-                {/* Mall */}
-                <div className="flex items-start gap-2 mb-1">
-                  <span className="text-gray-500">🏬</span>
-                  <span className="font-medium text-gray-800">{club.mall}</span>
+        <span key={club.id}>
+          {/* Radius circle */}
+          {radius > 0 && (
+            <Circle
+              center={[club.lat, club.lng]}
+              radius={radius}
+              pathOptions={{
+                color: '#f97316',
+                fillColor: '#f97316',
+                fillOpacity: 0.15,
+                weight: 1
+              }}
+            />
+          )}
+          {/* Marker */}
+          <Marker
+            position={[club.lat, club.lng]}
+            icon={apolloIcon}
+          >
+            <Popup maxWidth={300}>
+              <div className="font-sans text-xs" style={{ minWidth: '200px' }}>
+                {/* Header */}
+                <div
+                  className="py-2 px-3 rounded-t text-white font-bold text-sm"
+                  style={{ background: 'linear-gradient(135deg, #f97316, #ea580c)' }}
+                >
+                  {club.name}
                 </div>
 
-                {/* Address */}
-                <div className="flex items-start gap-2 mb-1">
-                  <span className="text-gray-500">📍</span>
-                  <span className="text-gray-700">{club.address}</span>
+                {/* Content */}
+                <div className="p-2 bg-gray-50">
+                  {/* Mall */}
+                  <div className="flex items-start gap-2 mb-1">
+                    <span className="text-gray-500">🏬</span>
+                    <span className="font-medium text-gray-800">{club.mall}</span>
+                  </div>
+
+                  {/* Address */}
+                  <div className="flex items-start gap-2 mb-1">
+                    <span className="text-gray-500">📍</span>
+                    <span className="text-gray-700">{club.address}</span>
+                  </div>
+
+                  {/* City */}
+                  <div className="flex items-start gap-2">
+                    <span className="text-gray-500">🏙️</span>
+                    <span className="text-gray-700">{club.city}</span>
+                  </div>
                 </div>
 
-                {/* City */}
-                <div className="flex items-start gap-2">
-                  <span className="text-gray-500">🏙️</span>
-                  <span className="text-gray-700">{club.city}</span>
+                {/* Footer */}
+                <div className="p-2 bg-orange-50 rounded-b text-center">
+                  <span className="text-orange-600 font-medium text-xs">
+                    APOLLO NEXT Fitness Club
+                  </span>
                 </div>
               </div>
-
-              {/* Footer */}
-              <div className="p-2 bg-orange-50 rounded-b text-center">
-                <span className="text-orange-600 font-medium text-xs">
-                  APOLLO NEXT Fitness Club
-                </span>
-              </div>
-            </div>
-          </Popup>
-        </Marker>
+            </Popup>
+          </Marker>
+        </span>
       ))}
     </>
   );
