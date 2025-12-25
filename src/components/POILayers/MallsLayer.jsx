@@ -4,7 +4,7 @@ import { supabase } from '../../lib/supabase';
 
 const MALL_COLOR = '#9C27B0';
 
-export default function MallsLayer({ visible = true, radius = 1000 }) {
+export default function MallsLayer({ visible = true, radius = 1000, opacity = 0.15 }) {
   const [malls, setMalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -59,7 +59,7 @@ export default function MallsLayer({ visible = true, radius = 1000 }) {
               color: MALL_COLOR,
               weight: 1,
               fillColor: MALL_COLOR,
-              fillOpacity: 0.1,
+              fillOpacity: opacity,
             }}
           />
         ),

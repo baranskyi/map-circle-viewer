@@ -19,7 +19,7 @@ const BRAND_COLORS = {
   'default': '#607D8B'
 };
 
-export default function SupermarketsLayer({ visible = true, radius = 500 }) {
+export default function SupermarketsLayer({ visible = true, radius = 500, opacity = 0.15 }) {
   const [markets, setMarkets] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +80,7 @@ export default function SupermarketsLayer({ visible = true, radius = 500 }) {
                 color: color,
                 weight: 1,
                 fillColor: color,
-                fillOpacity: 0.1,
+                fillOpacity: opacity,
               }}
             />
           ),

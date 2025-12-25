@@ -2,6 +2,19 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.11.0] (Axolotl) - 2025-12-25
+
+### Added
+- **Brightness/opacity sliders** for all infrastructure layers (0-100%)
+- **"М" letter markers** for Metro stations (like "A" for Apollo)
+- Proportional opacity for Kyivstar hexagons (preserves relative brightness based on people count)
+
+### Changed
+- Metro markers now use custom icons with "М" letter instead of circle markers
+- All layer components now accept opacity prop for smooth control
+
+---
+
 ## [2.10.1] (Quokka) - 2025-12-25
 
 ### Added

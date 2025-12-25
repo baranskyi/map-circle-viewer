@@ -43,7 +43,7 @@ const getOpacity = (totalPeople) => {
   return 0.35;
 };
 
-export default function KyivstarLayer({ visible = true, layerType = 'active_clients' }) {
+export default function KyivstarLayer({ visible = true, layerType = 'active_clients', opacityMultiplier = 1 }) {
   const [hexagons, setHexagons] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,7 +75,8 @@ export default function KyivstarLayer({ visible = true, layerType = 'active_clie
         const coordinates = hexagon.coordinates || [];
         const totalPeople = hexagon.total_people || 0;
         const fillColor = layerConfig.getColor(totalPeople);
-        const fillOpacity = getOpacity(totalPeople);
+        const baseOpacity = getOpacity(totalPeople);
+        const fillOpacity = baseOpacity * opacityMultiplier;
         const gyms = hexagon.gyms || [];
 
         if (coordinates.length < 3) return null;

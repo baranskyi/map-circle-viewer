@@ -151,7 +151,14 @@ function MapView({
   mallsRadius = 1000,
   fitnessRadius = 500,
   supermarketsRadius = 500,
-  apolloClubsRadius = 500
+  apolloClubsRadius = 500,
+  metroOpacity = 0.15,
+  mallsOpacity = 0.15,
+  fitnessOpacity = 0.15,
+  supermarketsOpacity = 0.15,
+  kyivstarActiveOpacity = 1,
+  kyivstarTerminatedOpacity = 1,
+  apolloClubsOpacity = 0.15
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
@@ -176,13 +183,13 @@ function MapView({
       <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
 
       {/* POI Layers */}
-      <MetroLayer visible={showMetro} radius={metroRadius} />
-      <MallsLayer visible={showMalls} radius={mallsRadius} />
-      <FitnessLayer visible={showFitness} radius={fitnessRadius} />
-      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} />
-      <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" />
-      <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" />
-      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} />
+      <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} />
+      <MallsLayer visible={showMalls} radius={mallsRadius} opacity={mallsOpacity} />
+      <FitnessLayer visible={showFitness} radius={fitnessRadius} opacity={fitnessOpacity} />
+      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} opacity={supermarketsOpacity} />
+      <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" opacityMultiplier={kyivstarActiveOpacity} />
+      <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" opacityMultiplier={kyivstarTerminatedOpacity} />
+      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} opacity={apolloClubsOpacity} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

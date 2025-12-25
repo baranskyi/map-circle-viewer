@@ -11,7 +11,7 @@ const BRAND_COLORS = {
   'default': '#4CAF50'
 };
 
-export default function FitnessLayer({ visible = true, radius = 500 }) {
+export default function FitnessLayer({ visible = true, radius = 500, opacity = 0.15 }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +72,7 @@ export default function FitnessLayer({ visible = true, radius = 500 }) {
                 color: color,
                 weight: 1,
                 fillColor: color,
-                fillOpacity: 0.1,
+                fillOpacity: opacity,
               }}
             />
           ),

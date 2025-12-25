@@ -28,7 +28,7 @@ const apolloIcon = L.divIcon({
   popupAnchor: [0, -14]
 });
 
-export default function ApolloClubsLayer({ visible = true, radius = 500 }) {
+export default function ApolloClubsLayer({ visible = true, radius = 500, opacity = 0.15 }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -62,7 +62,7 @@ export default function ApolloClubsLayer({ visible = true, radius = 500 }) {
               pathOptions={{
                 color: '#f97316',
                 fillColor: '#f97316',
-                fillOpacity: 0.15,
+                fillOpacity: opacity,
                 weight: 1
               }}
             />

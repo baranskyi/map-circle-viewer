@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.10.1 (Quokka)';
+const APP_VERSION = '2.11.0 (Axolotl)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -38,6 +38,15 @@ function MapApp() {
   const [fitnessRadius, setFitnessRadius] = useState(500);
   const [supermarketsRadius, setSupermarketsRadius] = useState(500);
   const [apolloClubsRadius, setApolloClubsRadius] = useState(500);
+
+  // POI Layer opacity settings (0-100%)
+  const [metroOpacity, setMetroOpacity] = useState(50);
+  const [mallsOpacity, setMallsOpacity] = useState(50);
+  const [fitnessOpacity, setFitnessOpacity] = useState(50);
+  const [supermarketsOpacity, setSupermarketsOpacity] = useState(50);
+  const [kyivstarActiveOpacity, setKyivstarActiveOpacity] = useState(100);
+  const [kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity] = useState(100);
+  const [apolloClubsOpacity, setApolloClubsOpacity] = useState(50);
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -223,6 +232,13 @@ function MapApp() {
         fitnessRadius={fitnessRadius}
         supermarketsRadius={supermarketsRadius}
         apolloClubsRadius={apolloClubsRadius}
+        metroOpacity={metroOpacity / 100 * 0.3}
+        mallsOpacity={mallsOpacity / 100 * 0.3}
+        fitnessOpacity={fitnessOpacity / 100 * 0.3}
+        supermarketsOpacity={supermarketsOpacity / 100 * 0.3}
+        kyivstarActiveOpacity={kyivstarActiveOpacity / 100}
+        kyivstarTerminatedOpacity={kyivstarTerminatedOpacity / 100}
+        apolloClubsOpacity={apolloClubsOpacity / 100 * 0.3}
       />
 
       <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">
@@ -346,7 +362,7 @@ function MapApp() {
                     />
                     <span className="text-xs text-gray-500">м</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 mb-2">
                     {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
@@ -356,6 +372,18 @@ function MapApp() {
                         {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={metroOpacity}
+                      onChange={(e) => setMetroOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{metroOpacity}%</span>
                   </div>
                 </div>
               )}
@@ -389,7 +417,7 @@ function MapApp() {
                     />
                     <span className="text-xs text-gray-500">м</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 mb-2">
                     {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
@@ -399,6 +427,18 @@ function MapApp() {
                         {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={mallsOpacity}
+                      onChange={(e) => setMallsOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-purple-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{mallsOpacity}%</span>
                   </div>
                 </div>
               )}
@@ -432,7 +472,7 @@ function MapApp() {
                     />
                     <span className="text-xs text-gray-500">м</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 mb-2">
                     {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
@@ -442,6 +482,18 @@ function MapApp() {
                         {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={fitnessOpacity}
+                      onChange={(e) => setFitnessOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{fitnessOpacity}%</span>
                   </div>
                 </div>
               )}
@@ -475,7 +527,7 @@ function MapApp() {
                     />
                     <span className="text-xs text-gray-500">м</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 mb-2">
                     {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
@@ -485,6 +537,18 @@ function MapApp() {
                         {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={supermarketsOpacity}
+                      onChange={(e) => setSupermarketsOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{supermarketsOpacity}%</span>
                   </div>
                 </div>
               )}
@@ -505,8 +569,20 @@ function MapApp() {
                 </span>
               </label>
               {showKyivstarActive && (
-                <div className="mt-2 ml-6 text-xs text-gray-500">
-                  390 гексагонів, 9190 клієнтів
+                <div className="mt-2 ml-6">
+                  <div className="text-xs text-gray-500 mb-2">390 гексагонів, 9190 клієнтів</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={kyivstarActiveOpacity}
+                      onChange={(e) => setKyivstarActiveOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{kyivstarActiveOpacity}%</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -526,8 +602,20 @@ function MapApp() {
                 </span>
               </label>
               {showKyivstarTerminated && (
-                <div className="mt-2 ml-6 text-xs text-gray-500">
-                  878 гексагонів, 37605 клієнтів
+                <div className="mt-2 ml-6">
+                  <div className="text-xs text-gray-500 mb-2">878 гексагонів, 37605 клієнтів</div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={kyivstarTerminatedOpacity}
+                      onChange={(e) => setKyivstarTerminatedOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-red-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{kyivstarTerminatedOpacity}%</span>
+                  </div>
                 </div>
               )}
             </div>
@@ -561,7 +649,7 @@ function MapApp() {
                     />
                     <span className="text-xs text-gray-500">м</span>
                   </div>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 mb-2">
                     {[0, 500, 1000, 2000].map(r => (
                       <button
                         key={r}
@@ -571,6 +659,18 @@ function MapApp() {
                         {r === 0 ? 'Вимк' : `${r}м`}
                       </button>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">Яскравість:</span>
+                    <input
+                      type="range"
+                      min="0"
+                      max="100"
+                      value={apolloClubsOpacity}
+                      onChange={(e) => setApolloClubsOpacity(parseInt(e.target.value))}
+                      className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                    />
+                    <span className="text-xs text-gray-600 w-8">{apolloClubsOpacity}%</span>
                   </div>
                 </div>
               )}
