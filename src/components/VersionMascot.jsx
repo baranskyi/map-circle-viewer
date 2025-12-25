@@ -5,7 +5,8 @@
 // - Each minor version gets a unique meme animal name
 
 // Pixel art data: 12x12 grid, each number is a color index
-const MASCOTS = {
+// Export for use in MascotGallery
+export const MASCOTS = {
   // v2.15.x
   puffin: {
     name: 'Puffin',

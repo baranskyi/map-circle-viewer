@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.15.1] (Puffin) - 2025-12-25
+
+### Added
+- **Mascot Gallery modal** - click on mascot to view all version mascots
+- **Version history grid** - 18 mascots from v1.0.0 to v2.15.x displayed as tiles
+- **Clickable mascot** - hover effect and click to open gallery
+
+---
+
 ## [2.15.0] (Puffin) - 2025-12-25
 
 ### Added

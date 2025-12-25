@@ -10,6 +10,7 @@ import DraggableInfrastructure from './components/DraggableInfrastructure';
 import VersionMascot from './components/VersionMascot';
 import VisiblePointsPanel from './components/VisiblePointsPanel';
 import PixelLogo from './components/PixelLogo';
+import MascotGallery from './components/MascotGallery';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
@@ -17,7 +18,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.15.0 (Puffin)';
+const APP_VERSION = '2.15.1 (Puffin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -66,6 +67,9 @@ function MapApp() {
 
   // Left panel collapse state
   const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
+
+  // Mascot gallery modal state
+  const [isMascotGalleryOpen, setIsMascotGalleryOpen] = useState(false);
 
   // Handle point click from panel - center map on point
   const handlePointClick = useCallback((point) => {
@@ -433,11 +437,23 @@ function MapApp() {
             <div className="text-xs text-gray-400">
               v{APP_VERSION} {mode === 'supabase' && '• Supabase'}
             </div>
-            <VersionMascot version={APP_VERSION} />
+            <div
+              onClick={() => setIsMascotGalleryOpen(true)}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+              title="Переглянути всіх маскотів"
+            >
+              <VersionMascot version={APP_VERSION} />
+            </div>
           </div>
         </div>
       </div>
       )}
+
+      {/* Mascot Gallery Modal */}
+      <MascotGallery
+        isOpen={isMascotGalleryOpen}
+        onClose={() => setIsMascotGalleryOpen(false)}
+      />
     </div>
   );
 }
