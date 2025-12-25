@@ -70,7 +70,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.9.1] - 2025-12-25
+## [2.9.1] (Wombat) - 2025-12-25
 
 ### Fixed
 - Terminated clients layer not showing on map
@@ -79,7 +79,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.9.0] - 2025-12-25
+## [2.9.0] (Wombat) - 2025-12-25
 
 ### Added
 - **Kyivstar: Завершені клієнти** layer with red color gradient
@@ -93,7 +93,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.8.1] - 2025-12-25
+## [2.8.1] (Platypus) - 2025-12-25
 
 ### Changed
 - Increased hexagon visibility with darker colors
@@ -102,7 +102,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.8.0] - 2025-12-25
+## [2.8.0] (Platypus) - 2025-12-25
 
 ### Added
 - **Kyivstar hexagon layer** for customer distribution zones
@@ -120,7 +120,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.7.0] - 2025-12-24
+## [2.7.0] (Sloth) - 2025-12-24
 
 ### Added
 - **Map layer switcher** with 4 tile options:
@@ -132,7 +132,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.6.0] - 2025-12-24
+## [2.6.0] (RedPanda) - 2025-12-24
 
 ### Added
 - **Polygon persistence** to database
@@ -141,7 +141,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.5.0] - 2025-12-23
+## [2.5.0] (Hedgehog) - 2025-12-23
 
 ### Added
 - **Marker icons** for KML points (circle, pin, square, diamond, star)
@@ -150,7 +150,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.4.0] - 2025-12-23
+## [2.4.0] (Otter) - 2025-12-23
 
 ### Changed
 - **UI restructure**: Upload and groups moved inside selected map
@@ -158,7 +158,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.3.1] - 2025-12-22
+## [2.3.1] (Raccoon) - 2025-12-22
 
 ### Fixed
 - KMZ upload to selected map
@@ -166,7 +166,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.3.0] - 2025-12-22
+## [2.3.0] (Raccoon) - 2025-12-22
 
 ### Added
 - KMZ/KML file upload with group auto-detection
@@ -174,7 +174,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.2.0] - 2025-12-21
+## [2.2.0] (Koala) - 2025-12-21
 
 ### Added
 - **POI Layers**:
@@ -186,7 +186,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.1.0] - 2025-12-20
+## [2.1.0] (Alpaca) - 2025-12-20
 
 ### Added
 - User authentication (Supabase Auth)
@@ -196,7 +196,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [2.0.0] - 2025-12-19
+## [2.0.0] (Llama) - 2025-12-19
 
 ### Added
 - Supabase backend integration
@@ -208,7 +208,7 @@ All notable changes to Map Circle Viewer will be documented in this file.
 
 ---
 
-## [1.0.0] - 2025-12-18
+## [1.0.0] (Dodo) - 2025-12-18
 
 ### Added
 - Initial release
