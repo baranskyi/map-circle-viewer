@@ -18,7 +18,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.15.1 (Puffin)';
+const APP_VERSION = '2.15.2 (Puffin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -269,6 +269,7 @@ function MapApp() {
         onVisiblePointsChange={setVisiblePoints}
         highlightedPointId={highlightedPointId}
         onMapReady={(map) => { mapRef.current = map; }}
+        leftPanelCollapsed={isLeftPanelCollapsed}
       />
 
       {/* Visible Points Panel */}
@@ -281,7 +282,7 @@ function MapApp() {
 
       {/* Left Panel - Collapsed */}
       {isLeftPanelCollapsed && (
-        <div className="absolute top-4 left-4 z-[1000]">
+        <div className="absolute top-14 left-4 z-[1001]">
           <button
             onClick={() => setIsLeftPanelCollapsed(false)}
             className="bg-white rounded-lg shadow-lg p-3 hover:bg-gray-50 transition-colors"
@@ -296,7 +297,7 @@ function MapApp() {
 
       {/* Left Panel - Expanded */}
       {!isLeftPanelCollapsed && (
-      <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">
+      <div className="absolute top-14 left-4 z-[1001] max-h-[calc(100vh-5rem)] overflow-y-auto overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-lg p-4 w-80">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">

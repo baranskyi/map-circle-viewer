@@ -32,11 +32,16 @@ const TILE_LAYERS = {
 };
 
 // Layer switcher control component
-function LayerControl({ currentLayer, onLayerChange }) {
+function LayerControl({ currentLayer, onLayerChange, leftPanelCollapsed }) {
   const [isOpen, setIsOpen] = useState(false);
 
+  // Position depends on left panel state
+  // When collapsed: next to hamburger (left: ~60px)
+  // When expanded: next to panel (left: ~350px)
+  const leftPosition = leftPanelCollapsed ? '60px' : '350px';
+
   return (
-    <div className="leaflet-top leaflet-right" style={{ marginTop: '10px', marginRight: '320px' }}>
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '10px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
       <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
         <div className="relative">
           <button
@@ -267,7 +272,9 @@ function MapView({
   // New props for visible points panel
   onVisiblePointsChange,
   highlightedPointId,
-  onMapReady
+  onMapReady,
+  // Left panel state for layer switcher positioning
+  leftPanelCollapsed = false
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
@@ -317,7 +324,7 @@ function MapView({
       />
 
       {/* Layer switcher control */}
-      <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
+      <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} leftPanelCollapsed={leftPanelCollapsed} />
 
       {/* POI Layers */}
       <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} onDataLoaded={setMetroPoints} />

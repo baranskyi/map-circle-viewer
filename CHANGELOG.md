@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.15.2] (Puffin) - 2025-12-25
+
+### Fixed
+- **Left panel positioning** - panel no longer overlaps zoom +/- buttons
+- **Horizontal scroll removed** - left panel content stays within bounds
+- **Layer switcher follows panel** - map layer dropdown moves with left panel collapse/expand
+
+---
+
 ## [2.15.1] (Puffin) - 2025-12-25
 
 ### Added
