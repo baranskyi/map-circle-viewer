@@ -9,6 +9,7 @@ import MapSelector from './components/MapSelector';
 import DraggableInfrastructure from './components/DraggableInfrastructure';
 import VersionMascot from './components/VersionMascot';
 import VisiblePointsPanel from './components/VisiblePointsPanel';
+import PixelLogo from './components/PixelLogo';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
@@ -16,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.14.0 (Okapi)';
+const APP_VERSION = '2.15.0 (Puffin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -62,6 +63,9 @@ function MapApp() {
   const [visiblePoints, setVisiblePoints] = useState([]);
   const [highlightedPointId, setHighlightedPointId] = useState(null);
   const mapRef = useRef(null);
+
+  // Left panel collapse state
+  const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
 
   // Handle point click from panel - center map on point
   const handlePointClick = useCallback((point) => {
@@ -271,11 +275,42 @@ function MapApp() {
         hoveredPointId={highlightedPointId}
       />
 
+      {/* Left Panel - Collapsed */}
+      {isLeftPanelCollapsed && (
+        <div className="absolute top-4 left-4 z-[1000]">
+          <button
+            onClick={() => setIsLeftPanelCollapsed(false)}
+            className="bg-white rounded-lg shadow-lg p-3 hover:bg-gray-50 transition-colors"
+            title="Показати панель"
+          >
+            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* Left Panel - Expanded */}
+      {!isLeftPanelCollapsed && (
       <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">
         <div className="bg-white rounded-lg shadow-lg p-4 w-80">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-lg font-bold">Map Circle Viewer</h1>
-            <UserMenu />
+            <div className="flex items-center gap-2">
+              <PixelLogo size={28} />
+              <h1 className="text-base font-bold">Map Circle Viewer</h1>
+            </div>
+            <div className="flex items-center gap-2">
+              <UserMenu />
+              <button
+                onClick={() => setIsLeftPanelCollapsed(true)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+                title="Згорнути"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {/* Map Selector (for authenticated users) */}
@@ -402,6 +437,7 @@ function MapApp() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }

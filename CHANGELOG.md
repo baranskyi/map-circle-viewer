@@ -2,6 +2,22 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.15.0] (Puffin) - 2025-12-25
+
+### Added
+- **Collapsible left panel** - hamburger menu button to collapse/expand the control panel
+- **Pixel art logo** - new Map Circle Viewer logo with map pin and circles
+- **Puffin mascot** for v2.15.x
+
+### Fixed
+- **Labels on KMZ polygons** - labels now show only on hover, not permanently
+- **Map layer switcher position** - moved left to avoid overlap with right panel
+
+### Changed
+- Header redesigned with pixel logo and collapse button
+
+---
+
 ## [2.14.0] (Okapi) - 2025-12-25
 
 ### Added

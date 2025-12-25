@@ -36,7 +36,7 @@ function LayerControl({ currentLayer, onLayerChange }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="leaflet-top leaflet-right" style={{ marginTop: '10px', marginRight: '10px' }}>
+    <div className="leaflet-top leaflet-right" style={{ marginTop: '10px', marginRight: '320px' }}>
       <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
         <div className="relative">
           <button
@@ -373,16 +373,14 @@ function MapView({
                     <span className="text-sm text-gray-600">{group.name}</span>
                   </div>
                 </Popup>
-                {(settings.labelsVisible || isHighlighted) && (
-                  <Tooltip
-                    permanent
-                    direction="top"
-                    offset={[0, isHighlighted ? -12 : -8]}
-                    className={`compact-label ${isHighlighted ? 'highlighted-tooltip' : ''}`}
-                  >
-                    {point.name}
-                  </Tooltip>
-                )}
+                <Tooltip
+                  direction="top"
+                  offset={[0, isHighlighted ? -12 : -8]}
+                  className={`compact-label ${isHighlighted ? 'highlighted-tooltip' : ''}`}
+                  permanent={isHighlighted}
+                >
+                  {point.name}
+                </Tooltip>
               </Marker>
             );
           }),
@@ -406,11 +404,9 @@ function MapView({
                   <span className="text-sm text-gray-600">{group.name} (полигон)</span>
                 </div>
               </Popup>
-              {settings.labelsVisible && (
-                <Tooltip permanent direction="center" className="compact-label">
-                  {polygon.name}
-                </Tooltip>
-              )}
+              <Tooltip direction="center" className="compact-label">
+                {polygon.name}
+              </Tooltip>
             </Polygon>
           )) : [])
         ];
