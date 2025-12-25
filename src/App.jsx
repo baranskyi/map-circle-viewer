@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.9.1';
+const APP_VERSION = '2.10.0 (Capybara)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -30,6 +30,7 @@ function MapApp() {
   const [showSupermarkets, setShowSupermarkets] = useState(false);
   const [showKyivstarActive, setShowKyivstarActive] = useState(false);
   const [showKyivstarTerminated, setShowKyivstarTerminated] = useState(false);
+  const [showApolloClubs, setShowApolloClubs] = useState(false);
 
   // POI Layer radius settings (in meters)
   const [metroRadius, setMetroRadius] = useState(500);
@@ -215,6 +216,7 @@ function MapApp() {
         showSupermarkets={showSupermarkets}
         showKyivstarActive={showKyivstarActive}
         showKyivstarTerminated={showKyivstarTerminated}
+        showApolloClubs={showApolloClubs}
         metroRadius={metroRadius}
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
@@ -508,7 +510,7 @@ function MapApp() {
             </div>
 
             {/* Kyivstar Terminated Clients */}
-            <div>
+            <div className="mb-3 pb-3 border-b border-gray-200">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
                   type="checkbox"
@@ -524,6 +526,27 @@ function MapApp() {
               {showKyivstarTerminated && (
                 <div className="mt-2 ml-6 text-xs text-gray-500">
                   878 гексагонів, 37605 клієнтів
+                </div>
+              )}
+            </div>
+
+            {/* Apollo Next Clubs */}
+            <div>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={showApolloClubs}
+                  onChange={() => setShowApolloClubs(!showApolloClubs)}
+                  className="w-4 h-4 rounded border-gray-300"
+                />
+                <span className="text-sm flex items-center gap-1">
+                  🏋️ APOLLO NEXT клуби
+                  <span className="w-2.5 h-2.5 rounded-full ml-1" style={{ backgroundColor: '#f97316' }} title="Apollo clubs"></span>
+                </span>
+              </label>
+              {showApolloClubs && (
+                <div className="mt-2 ml-6 text-xs text-gray-500">
+                  19 клубів у 6 містах
                 </div>
               )}
             </div>

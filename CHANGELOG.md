@@ -2,6 +2,24 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.10.0] (Capybara) - 2025-12-25
+
+### Added
+- **APOLLO NEXT clubs layer** with 19 fitness club locations
+- **Version codenames** - each version now has a meme animal name
+- Orange markers with "A" icon for club identification
+- Popup with club name, mall/TC name, address, and city
+- Coverage across 6 cities:
+  - Київ: 13 clubs
+  - Львів: 2 clubs
+  - Одеса: 2 clubs
+  - Вінниця, Біла Церква, Бориспіль: 1 club each
+- Toggle "🏋️ APOLLO NEXT клуби" in infrastructure panel
+- Geocoding script for address → coordinates conversion
+- Database table `apollo_clubs` with RLS policies
+
+---
+
 ## [2.9.1] - 2025-12-25
 
 ### Fixed

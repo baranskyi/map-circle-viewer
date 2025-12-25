@@ -516,3 +516,32 @@ export const kyivstarApi = {
     return this.bulkInsert(hexagons, sourceFile);
   }
 };
+
+// ============================================
+// APOLLO CLUBS API
+// ============================================
+
+export const apolloClubsApi = {
+  // Get all Apollo clubs
+  async getAll() {
+    const { data, error } = await supabase
+      .from('apollo_clubs')
+      .select('*')
+      .order('club_id');
+
+    if (error) throw error;
+    return data;
+  },
+
+  // Get clubs by city
+  async getByCity(city) {
+    const { data, error } = await supabase
+      .from('apollo_clubs')
+      .select('*')
+      .eq('city', city)
+      .order('club_id');
+
+    if (error) throw error;
+    return data;
+  }
+};

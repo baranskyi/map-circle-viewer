@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer } from './POILayers';
+import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer, ApolloClubsLayer } from './POILayers';
 
 // Available map tile layers
 const TILE_LAYERS = {
@@ -146,6 +146,7 @@ function MapView({
   showSupermarkets = false,
   showKyivstarActive = false,
   showKyivstarTerminated = false,
+  showApolloClubs = false,
   metroRadius = 500,
   mallsRadius = 1000,
   fitnessRadius = 500,
@@ -180,6 +181,7 @@ function MapView({
       <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" />
+      <ApolloClubsLayer visible={showApolloClubs} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];
