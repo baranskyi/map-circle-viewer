@@ -2,6 +2,21 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.12.1] (Pangolin) - 2025-12-25
+
+### Added
+- **Pixel art mascot** for each version (120x120px) displayed under version number
+- Version naming rules: animal changes only on minor version (2.12.x → 2.13.0)
+
+### Fixed
+- **Click-through for markers** - circles no longer block clicks on underlying markers
+- Points can now be clicked even when covered by other layers' radius circles
+
+### Changed
+- Removed unnecessary drag hint text from infrastructure panel
+
+---
+
 ## [2.12.0] (Pangolin) - 2025-12-25
 
 ### Added

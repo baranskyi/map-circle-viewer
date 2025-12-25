@@ -74,6 +74,7 @@ export default function FitnessLayer({ visible = true, radius = 500, opacity = 0
                 fillColor: color,
                 fillOpacity: opacity,
               }}
+              bubblingMouseEvents={true}
             />
           ),
           /* Club marker */

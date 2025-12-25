@@ -221,9 +221,8 @@ export default function DraggableInfrastructure({
 
   return (
     <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-      <h3 className="text-sm font-semibold mb-3 text-gray-700 flex items-center gap-2">
+      <h3 className="text-sm font-semibold mb-3 text-gray-700">
         Інфраструктура
-        <span className="text-xs text-gray-400 font-normal">(перетягніть для зміни порядку)</span>
       </h3>
 
       <DragDropContext onDragEnd={onDragEnd}>

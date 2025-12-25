@@ -65,12 +65,14 @@ export default function ApolloClubsLayer({ visible = true, radius = 500, opacity
                 fillOpacity: opacity,
                 weight: 1
               }}
+              bubblingMouseEvents={true}
             />
           )}
           {/* Marker */}
           <Marker
             position={[club.lat, club.lng]}
             icon={apolloIcon}
+            zIndexOffset={1000}
           >
             <Popup maxWidth={300}>
               <div className="font-sans text-xs" style={{ minWidth: '200px' }}>

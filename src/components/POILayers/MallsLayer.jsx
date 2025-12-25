@@ -61,6 +61,7 @@ export default function MallsLayer({ visible = true, radius = 1000, opacity = 0.
               fillColor: MALL_COLOR,
               fillOpacity: opacity,
             }}
+            bubblingMouseEvents={true}
           />
         ),
         /* Mall marker */

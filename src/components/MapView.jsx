@@ -210,6 +210,7 @@ function MapView({
                 fillOpacity: 0.1,
                 weight: 1
               }}
+              bubblingMouseEvents={true}
             />
           )) : []),
 
@@ -219,6 +220,7 @@ function MapView({
               key={`marker-${group.id}-${idx}-${iconType}-${settings.color}`}
               position={[point.lat, point.lng]}
               icon={getIcon(iconType, settings.color)}
+              zIndexOffset={1000}
             >
               <Popup>
                 <div>

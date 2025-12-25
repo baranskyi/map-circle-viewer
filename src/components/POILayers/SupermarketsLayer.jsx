@@ -82,6 +82,7 @@ export default function SupermarketsLayer({ visible = true, radius = 500, opacit
                 fillColor: color,
                 fillOpacity: opacity,
               }}
+              bubblingMouseEvents={true}
             />
           ),
           /* Market marker */

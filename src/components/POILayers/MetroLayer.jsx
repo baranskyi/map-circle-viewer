@@ -101,12 +101,14 @@ export default function MetroLayer({ visible = true, radius = 500, opacity = 0.1
                   fillColor: lineColor,
                   fillOpacity: opacity,
                 }}
+                bubblingMouseEvents={true}
               />
             )}
             {/* Station marker */}
             <Marker
               position={[station.lat, station.lng]}
               icon={createMetroIcon(lineColor)}
+              zIndexOffset={1000}
             >
               <Popup>
                 <div className="text-center">

@@ -7,10 +7,15 @@ import ControlPanel from './components/ControlPanel';
 import FileUpload from './components/FileUpload';
 import MapSelector from './components/MapSelector';
 import DraggableInfrastructure from './components/DraggableInfrastructure';
+import VersionMascot from './components/VersionMascot';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.12.0 (Pangolin)';
+// VERSION NAMING RULES:
+// - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
+// - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
+// - Each minor version gets a unique meme animal mascot
+const APP_VERSION = '2.12.1 (Pangolin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -365,8 +370,11 @@ function MapApp() {
             />
           )}
 
-          <div className="mt-4 pt-3 border-t text-xs text-gray-400 text-center">
-            v{APP_VERSION} {mode === 'supabase' && '• Supabase'}
+          <div className="mt-4 pt-3 border-t text-center">
+            <div className="text-xs text-gray-400">
+              v{APP_VERSION} {mode === 'supabase' && '• Supabase'}
+            </div>
+            <VersionMascot version={APP_VERSION} />
           </div>
         </div>
       </div>
