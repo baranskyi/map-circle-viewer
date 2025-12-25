@@ -40,7 +40,7 @@ async function uploadHexagons(jsonFile) {
   const records = hexagons.map(hex => ({
     hex_id: hex.hex_id || '',
     coordinates: hex.coordinates || [],
-    layer_name: 'active_clients',
+    layer_name: hex.layer_name || 'active_clients',
     source_file: sourceFile,
     fill_color: hex.fill_color || '#22c55e',
     home_only: hex.stats?.home_only || 0,
@@ -50,10 +50,10 @@ async function uploadHexagons(jsonFile) {
     gyms: hex.gyms || []
   }));
 
-  // Delete existing records
+  // Delete existing records (all layers)
   console.log('\nClearing existing hexagons...');
   const deleteRes = await fetch(
-    `${SUPABASE_URL}/rest/v1/kyivstar_hexagons?layer_name=eq.active_clients`,
+    `${SUPABASE_URL}/rest/v1/kyivstar_hexagons?id=neq.00000000-0000-0000-0000-000000000000`,
     {
       method: 'DELETE',
       headers: {

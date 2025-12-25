@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.9.1] - 2025-12-25
+
+### Fixed
+- Terminated clients layer not showing on map
+- Upload script now correctly preserves layer_name from JSON data
+- Delete operation now clears all layers before re-upload
+
+---
+
 ## [2.9.0] - 2025-12-25
 
 ### Added

@@ -9,7 +9,7 @@ import MapSelector from './components/MapSelector';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
-const APP_VERSION = '2.9.0';
+const APP_VERSION = '2.9.1';
 
 function MapApp() {
   const { user } = useAuthStore();
