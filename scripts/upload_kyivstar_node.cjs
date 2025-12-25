@@ -41,7 +41,13 @@ async function uploadHexagons(jsonFile) {
     hex_id: hex.hex_id || '',
     coordinates: hex.coordinates || [],
     layer_name: 'active_clients',
-    source_file: sourceFile
+    source_file: sourceFile,
+    fill_color: hex.fill_color || '#22c55e',
+    home_only: hex.stats?.home_only || 0,
+    work_only: hex.stats?.work_only || 0,
+    home_and_work: hex.stats?.home_and_work || 0,
+    total_people: hex.stats?.total || 0,
+    gyms: hex.gyms || []
   }));
 
   // Delete existing records
