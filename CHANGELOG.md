@@ -2,6 +2,23 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.13.0] (Narwhal) - 2025-12-25
+
+### Added
+- **Visible points panel** - right-side panel showing all points visible on current screen
+- **Search functionality** in panel - filter visible points by name or group
+- **Hover-to-highlight** - hovering over point in panel highlights it on the map with glow effect
+- **Click-to-center** - clicking point in panel centers the map on that location
+- **Points grouping** - visible points organized by their groups in the panel
+- **Collapsible panel** - can be minimized to icon with point count badge
+- **Highlighted marker icons** - larger icons with animated glow when hovered from panel
+
+### Changed
+- New Narwhal pixel art mascot for v2.13.x
+- Improved marker interaction with highlighted states
+
+---
+
 ## [2.12.1] (Pangolin) - 2025-12-25
 
 ### Added

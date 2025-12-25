@@ -62,3 +62,27 @@ body {
 .polygon-label::before {
   display: none !important;
 }
+
+/* Highlighted tooltip styles */
+.highlighted-tooltip {
+  background: rgba(59, 130, 246, 0.95) !important;
+  color: white !important;
+  border: 2px solid white !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.5), 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  font-weight: 600 !important;
+  z-index: 10000 !important;
+}
+
+.highlighted-tooltip::before {
+  border-top-color: rgba(59, 130, 246, 0.95) !important;
+}
+
+/* Highlighted marker animation */
+.custom-marker.highlighted > div {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}

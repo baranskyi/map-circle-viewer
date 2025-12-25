@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { AuthProvider, UserMenu } from './components/Auth';
 import { useAuthStore } from './stores/authStore';
 import { useDataStore } from './stores/dataStore';
@@ -8,6 +8,7 @@ import FileUpload from './components/FileUpload';
 import MapSelector from './components/MapSelector';
 import DraggableInfrastructure from './components/DraggableInfrastructure';
 import VersionMascot from './components/VersionMascot';
+import VisiblePointsPanel from './components/VisiblePointsPanel';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
 
@@ -15,7 +16,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.12.1 (Pangolin)';
+const APP_VERSION = '2.13.0 (Narwhal)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -56,6 +57,18 @@ function MapApp() {
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
+
+  // Visible points panel state
+  const [visiblePoints, setVisiblePoints] = useState([]);
+  const [highlightedPointId, setHighlightedPointId] = useState(null);
+  const mapRef = useRef(null);
+
+  // Handle point click from panel - center map on point
+  const handlePointClick = useCallback((point) => {
+    if (mapRef.current) {
+      mapRef.current.setView([point.lat, point.lng], 16, { animate: true });
+    }
+  }, []);
 
   // Get active groups based on mode
   const activeGroups = mode === 'supabase' && currentMap ? groups : localMapData.groups;
@@ -245,6 +258,17 @@ function MapApp() {
         kyivstarActiveOpacity={kyivstarActiveOpacity / 100}
         kyivstarTerminatedOpacity={kyivstarTerminatedOpacity / 100}
         apolloClubsOpacity={apolloClubsOpacity / 100 * 0.3}
+        onVisiblePointsChange={setVisiblePoints}
+        highlightedPointId={highlightedPointId}
+        onMapReady={(map) => { mapRef.current = map; }}
+      />
+
+      {/* Visible Points Panel */}
+      <VisiblePointsPanel
+        points={visiblePoints}
+        onPointHover={setHighlightedPointId}
+        onPointClick={handlePointClick}
+        hoveredPointId={highlightedPointId}
       />
 
       <div className="absolute top-4 left-4 z-[1000] max-h-[calc(100vh-2rem)] overflow-y-auto">

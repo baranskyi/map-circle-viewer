@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap } from 'react-leaflet';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer, ApolloClubsLayer } from './POILayers';
 
@@ -115,6 +115,99 @@ const getIcon = (type, color) => {
   return iconFn(color);
 };
 
+// Highlighted icon types (larger, with glow effect)
+const HIGHLIGHTED_ICON_TYPES = {
+  circle: (color) => L.divIcon({
+    className: 'custom-marker highlighted',
+    html: `<div style="width:20px;height:20px;background:${color};border:3px solid white;border-radius:50%;box-shadow:0 0 12px ${color}, 0 2px 6px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [20, 20],
+    iconAnchor: [10, 10]
+  }),
+  pin: (color) => L.divIcon({
+    className: 'custom-marker highlighted',
+    html: `<div style="width:0;height:0;border-left:12px solid transparent;border-right:12px solid transparent;border-top:24px solid ${color};filter:drop-shadow(0 0 8px ${color}) drop-shadow(0 2px 3px rgba(0,0,0,0.3));"></div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 24]
+  }),
+  square: (color) => L.divIcon({
+    className: 'custom-marker highlighted',
+    html: `<div style="width:16px;height:16px;background:${color};border:3px solid white;box-shadow:0 0 12px ${color}, 0 2px 6px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+  }),
+  diamond: (color) => L.divIcon({
+    className: 'custom-marker highlighted',
+    html: `<div style="width:16px;height:16px;background:${color};border:3px solid white;transform:rotate(45deg);box-shadow:0 0 12px ${color}, 0 2px 6px rgba(0,0,0,0.4);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8]
+  }),
+  star: (color) => L.divIcon({
+    className: 'custom-marker highlighted',
+    html: `<div style="color:${color};font-size:24px;text-shadow:0 0 12px ${color}, 0 0 2px white, 0 2px 3px rgba(0,0,0,0.3);">★</div>`,
+    iconSize: [24, 24],
+    iconAnchor: [12, 12]
+  })
+};
+
+// Get highlighted icon by type
+const getHighlightedIcon = (type, color) => {
+  const iconFn = HIGHLIGHTED_ICON_TYPES[type] || HIGHLIGHTED_ICON_TYPES.circle;
+  return iconFn(color);
+};
+
+// Component to track map bounds and report visible points
+function BoundsTracker({ groups, groupSettings, onVisiblePointsChange, onMapReady }) {
+  const map = useMapEvents({
+    moveend: () => updateVisiblePoints(),
+    zoomend: () => updateVisiblePoints(),
+    load: () => {
+      updateVisiblePoints();
+      onMapReady?.(map);
+    }
+  });
+
+  const updateVisiblePoints = useCallback(() => {
+    if (!map) return;
+
+    const bounds = map.getBounds();
+    const visiblePoints = [];
+
+    groups.forEach(group => {
+      const settings = groupSettings[group.id];
+      if (!settings || !settings.visible) return;
+
+      (group.points || []).forEach(point => {
+        if (bounds.contains([point.lat, point.lng])) {
+          visiblePoints.push({
+            id: point.id || `${group.id}-${point.lat}-${point.lng}`,
+            name: point.name,
+            lat: point.lat,
+            lng: point.lng,
+            groupId: group.id,
+            groupName: group.name,
+            color: settings.color
+          });
+        }
+      });
+    });
+
+    onVisiblePointsChange?.(visiblePoints);
+  }, [map, groups, groupSettings, onVisiblePointsChange]);
+
+  useEffect(() => {
+    updateVisiblePoints();
+  }, [groups, groupSettings, updateVisiblePoints]);
+
+  useEffect(() => {
+    if (map) {
+      onMapReady?.(map);
+      updateVisiblePoints();
+    }
+  }, [map, onMapReady, updateVisiblePoints]);
+
+  return null;
+}
+
 // Component to update map view only when center/zoom actually change
 function MapUpdater({ center, zoom }) {
   const map = useMap();
@@ -158,7 +251,11 @@ function MapView({
   supermarketsOpacity = 0.15,
   kyivstarActiveOpacity = 1,
   kyivstarTerminatedOpacity = 1,
-  apolloClubsOpacity = 0.15
+  apolloClubsOpacity = 0.15,
+  // New props for visible points panel
+  onVisiblePointsChange,
+  highlightedPointId,
+  onMapReady
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
@@ -178,6 +275,14 @@ function MapView({
       />
 
       <MapUpdater center={center} zoom={zoom} />
+
+      {/* Track visible points for side panel */}
+      <BoundsTracker
+        groups={groups}
+        groupSettings={groupSettings}
+        onVisiblePointsChange={onVisiblePointsChange}
+        onMapReady={onMapReady}
+      />
 
       {/* Layer switcher control */}
       <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} />
@@ -215,27 +320,40 @@ function MapView({
           )) : []),
 
           // Render point markers with icons
-          ...(group.points || []).map((point, idx) => (
-            <Marker
-              key={`marker-${group.id}-${idx}-${iconType}-${settings.color}`}
-              position={[point.lat, point.lng]}
-              icon={getIcon(iconType, settings.color)}
-              zIndexOffset={1000}
-            >
-              <Popup>
-                <div>
-                  <strong>{point.name}</strong>
-                  <br />
-                  <span className="text-sm text-gray-600">{group.name}</span>
-                </div>
-              </Popup>
-              {settings.labelsVisible && (
-                <Tooltip permanent direction="top" offset={[0, -8]} className="compact-label">
-                  {point.name}
-                </Tooltip>
-              )}
-            </Marker>
-          )),
+          ...(group.points || []).map((point, idx) => {
+            const pointId = point.id || `${group.id}-${point.lat}-${point.lng}`;
+            const isHighlighted = highlightedPointId === pointId;
+            const icon = isHighlighted
+              ? getHighlightedIcon(iconType, settings.color)
+              : getIcon(iconType, settings.color);
+
+            return (
+              <Marker
+                key={`marker-${group.id}-${idx}-${iconType}-${settings.color}-${isHighlighted}`}
+                position={[point.lat, point.lng]}
+                icon={icon}
+                zIndexOffset={isHighlighted ? 2000 : 1000}
+              >
+                <Popup>
+                  <div>
+                    <strong>{point.name}</strong>
+                    <br />
+                    <span className="text-sm text-gray-600">{group.name}</span>
+                  </div>
+                </Popup>
+                {(settings.labelsVisible || isHighlighted) && (
+                  <Tooltip
+                    permanent
+                    direction="top"
+                    offset={[0, isHighlighted ? -12 : -8]}
+                    className={`compact-label ${isHighlighted ? 'highlighted-tooltip' : ''}`}
+                  >
+                    {point.name}
+                  </Tooltip>
+                )}
+              </Marker>
+            );
+          }),
 
           // Render polygons
           ...(settings.polygonsVisible && group.polygons ? group.polygons.map((polygon, idx) => (
