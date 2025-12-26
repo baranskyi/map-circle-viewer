@@ -1,8 +1,149 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents, Polyline } from 'react-leaflet';
 import L from 'leaflet';
 import { MetroLayer, MallsLayer, FitnessLayer, KyivstarLayer } from './POILayers';
 import HeatmapLayer from './HeatmapLayer';
+
+// Calculate distance between two points in meters using Haversine formula
+function calculateDistance(lat1, lng1, lat2, lng2) {
+  const R = 6371000; // Earth's radius in meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+// Format distance for display
+function formatDistance(meters) {
+  if (meters < 1000) {
+    return `${Math.round(meters)} м`;
+  }
+  return `${(meters / 1000).toFixed(2)} км`;
+}
+
+// Distance measurement component
+function DistanceMeasure({ active, onMeasure }) {
+  const [points, setPoints] = useState([]);
+  const map = useMap();
+
+  // Handle map clicks when measurement is active
+  useMapEvents({
+    click: (e) => {
+      if (!active) return;
+
+      const newPoint = [e.latlng.lat, e.latlng.lng];
+
+      if (points.length === 0) {
+        setPoints([newPoint]);
+      } else if (points.length === 1) {
+        const allPoints = [...points, newPoint];
+        setPoints(allPoints);
+        const distance = calculateDistance(
+          allPoints[0][0], allPoints[0][1],
+          allPoints[1][0], allPoints[1][1]
+        );
+        onMeasure?.(distance);
+      } else {
+        // Start new measurement
+        setPoints([newPoint]);
+        onMeasure?.(null);
+      }
+    }
+  });
+
+  // Clear points when deactivated
+  useEffect(() => {
+    if (!active) {
+      setPoints([]);
+      onMeasure?.(null);
+    }
+  }, [active, onMeasure]);
+
+  // Change cursor when active
+  useEffect(() => {
+    const container = map.getContainer();
+    if (active) {
+      container.style.cursor = 'crosshair';
+    } else {
+      container.style.cursor = '';
+    }
+    return () => {
+      container.style.cursor = '';
+    };
+  }, [active, map]);
+
+  if (!active || points.length === 0) return null;
+
+  const distance = points.length === 2
+    ? calculateDistance(points[0][0], points[0][1], points[1][0], points[1][1])
+    : null;
+
+  // Calculate midpoint for label
+  const midpoint = points.length === 2
+    ? [(points[0][0] + points[1][0]) / 2, (points[0][1] + points[1][1]) / 2]
+    : null;
+
+  return (
+    <>
+      {/* Start point marker */}
+      <CircleMarker
+        center={points[0]}
+        radius={6}
+        pathOptions={{ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 1, weight: 2 }}
+      />
+
+      {/* End point marker */}
+      {points.length === 2 && (
+        <CircleMarker
+          center={points[1]}
+          radius={6}
+          pathOptions={{ color: '#3b82f6', fillColor: '#3b82f6', fillOpacity: 1, weight: 2 }}
+        />
+      )}
+
+      {/* Line between points */}
+      {points.length === 2 && (
+        <Polyline
+          positions={points}
+          pathOptions={{ color: '#3b82f6', weight: 3, dashArray: '10, 10' }}
+        >
+          <Tooltip permanent direction="center" className="distance-label">
+            {formatDistance(distance)}
+          </Tooltip>
+        </Polyline>
+      )}
+    </>
+  );
+}
+
+// Distance measure button component
+function DistanceMeasureButton({ active, onToggle, leftPanelCollapsed }) {
+  const leftPosition = leftPanelCollapsed ? '60px' : '340px';
+
+  return (
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '60px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
+      <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
+        <button
+          onClick={onToggle}
+          className={`px-3 py-2 rounded-lg shadow-lg border flex items-center gap-2 text-sm font-medium transition-colors ${
+            active
+              ? 'bg-blue-500 text-white border-blue-600'
+              : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
+          }`}
+          title={active ? 'Вимкнути вимірювання' : 'Виміряти відстань'}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          <span className="hidden sm:inline">Лінійка</span>
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // Available map tile layers
 const TILE_LAYERS = {
@@ -280,6 +421,10 @@ function MapView({
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
 
+  // Distance measurement state
+  const [measureActive, setMeasureActive] = useState(false);
+  const [measuredDistance, setMeasuredDistance] = useState(null);
+
   // Infrastructure points storage
   const [metroPoints, setMetroPoints] = useState([]);
   const [mallPoints, setMallPoints] = useState([]);
@@ -322,6 +467,16 @@ function MapView({
 
       {/* Layer switcher control */}
       <LayerControl currentLayer={currentLayer} onLayerChange={setCurrentLayer} leftPanelCollapsed={leftPanelCollapsed} />
+
+      {/* Distance measurement button */}
+      <DistanceMeasureButton
+        active={measureActive}
+        onToggle={() => setMeasureActive(!measureActive)}
+        leftPanelCollapsed={leftPanelCollapsed}
+      />
+
+      {/* Distance measurement tool */}
+      <DistanceMeasure active={measureActive} onMeasure={setMeasuredDistance} />
 
       {/* POI Layers */}
       <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} onDataLoaded={setMetroPoints} />

@@ -2,6 +2,17 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.17.6] (Fennec) - 2025-12-26
+
+### Added
+- **Distance measurement tool** - "Лінійка" button to measure straight-line distance
+- Click two points on map to see distance in meters/kilometers
+- Dashed blue line with distance label
+- Crosshair cursor when measurement mode is active
+- Button toggles blue when active
+
+---
+
 ## [2.17.5] (Fennec) - 2025-12-26
 
 ### Added
