@@ -299,19 +299,16 @@ function MapApp() {
       <div className="absolute top-4 left-4 z-[1001] max-h-[calc(100vh-2rem)] overflow-y-auto overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-lg p-4 w-80">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-base font-bold">Map Circle Viewer</h1>
-            <div className="flex items-center gap-1">
-              <UserMenu />
-              <button
-                onClick={() => setIsLeftPanelCollapsed(true)}
-                className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1.5 rounded transition-colors"
-                title="Згорнути панель"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
-                </svg>
-              </button>
-            </div>
+            <UserMenu />
+            <button
+              onClick={() => setIsLeftPanelCollapsed(true)}
+              className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-1.5 rounded transition-colors"
+              title="Згорнути панель"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7M18 19l-7-7 7-7" />
+              </svg>
+            </button>
           </div>
 
           {/* Map Selector (for authenticated users) */}
@@ -371,24 +368,6 @@ function MapApp() {
                   />
                 </div>
               )}
-            </div>
-          )}
-
-          {/* File Upload for local/non-auth mode */}
-          {(!user || mode === 'local') && !(currentMap && mode === 'supabase') && (
-            <FileUpload
-              onDataLoaded={handleDataLoaded}
-              onReset={resetToDefault}
-              onMapCreated={handleMapCreated}
-              currentMapId={null}
-              onDataAddedToMap={handleDataAddedToMap}
-            />
-          )}
-
-          {/* Loading indicator for local mode */}
-          {loading && mode === 'local' && (
-            <div className="text-center py-2 text-gray-400 text-sm">
-              Завантаження...
             </div>
           )}
 
