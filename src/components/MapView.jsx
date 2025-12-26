@@ -339,7 +339,7 @@ function MapView({
               pathOptions={{
                 color: settings.color,
                 fillColor: settings.color,
-                fillOpacity: 0.1,
+                fillOpacity: (settings.opacity ?? 50) / 100 * 0.3,
                 weight: 1
               }}
               bubblingMouseEvents={true}

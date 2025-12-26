@@ -1,6 +1,6 @@
 import GroupControl from './GroupControl';
 
-function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange, onToggleAll }) {
+function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange, onOpacityChange, onToggleAll }) {
   if (groups.length === 0) {
     return null;
   }
@@ -17,7 +17,7 @@ function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onTog
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between mb-2">
-        <h2 className="font-semibold text-sm text-gray-700">Groups</h2>
+        <h2 className="font-semibold text-sm text-gray-700">Групи</h2>
         <div className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -32,7 +32,7 @@ function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onTog
             className="w-4 h-4 rounded border-gray-300"
           />
           <label htmlFor="master-toggle" className="text-xs text-gray-600 cursor-pointer">
-            {allVisible ? 'Hide All' : 'Show All'}
+            {allVisible ? 'Сховати все' : 'Показати все'}
           </label>
         </div>
       </div>
@@ -48,11 +48,12 @@ function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onTog
           onRadiusChange={(radius) => onRadiusChange(group.id, radius)}
           onColorChange={(color) => onColorChange(group.id, color)}
           onIconChange={(iconType) => onIconChange && onIconChange(group.id, iconType)}
+          onOpacityChange={(opacity) => onOpacityChange && onOpacityChange(group.id, opacity)}
         />
       ))}
 
       <div className="pt-2 text-xs text-gray-500 border-t">
-        Total: {groups.reduce((sum, g) => sum + g.points.length, 0)} points in {groups.length} groups
+        Всього: {groups.reduce((sum, g) => sum + g.points.length, 0)} точок у {groups.length} групах
       </div>
     </div>
   );

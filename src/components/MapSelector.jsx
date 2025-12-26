@@ -154,7 +154,11 @@ export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSe
                     {status.visiblePoints}
                   </span>
                 )}
-                <span className="text-xs text-gray-400 capitalize">{map.access_level}</span>
+                <span className="text-xs text-gray-400">
+                  {map.access_level === 'owner' ? 'власник' :
+                   map.access_level === 'editor' ? 'редактор' :
+                   map.access_level === 'viewer' ? 'глядач' : map.access_level}
+                </span>
                 {map.access_level === 'owner' && (
                   <button
                     onClick={(e) => handleDeleteClick(map, e)}

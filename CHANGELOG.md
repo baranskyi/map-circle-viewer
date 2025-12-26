@@ -2,6 +2,17 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.16.4] (Quetzal) - 2025-12-26
+
+### Added
+- **Opacity slider for user groups** - adjustable circle transparency (0-100%) in "Мої карти"
+
+### Changed
+- **Ukrainian translation** - ControlPanel and GroupControl translated (Групи, Радіус, Колір, Іконка, Підписи, etc.)
+- Access level labels translated (власник, редактор, глядач)
+
+---
+
 ## [2.16.3] (Quetzal) - 2025-12-26
 
 ### Added

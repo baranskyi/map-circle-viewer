@@ -7,11 +7,12 @@ const ICON_OPTIONS = [
   { type: 'star', label: '★', title: 'Зірка' }
 ];
 
-function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange }) {
+function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange, onOpacityChange }) {
   if (!settings) return null;
 
   const hasPolygons = group.polygons && group.polygons.length > 0;
   const currentIcon = settings.iconType || 'circle';
+  const opacity = settings.opacity ?? 50; // default 50%
 
   return (
     <div className="border rounded-lg p-3 bg-gray-50">
@@ -31,7 +32,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
           {group.name}
         </label>
         <span className="text-xs text-gray-500">
-          ({group.points?.length || 0}{hasPolygons ? ` + ${group.polygons.length}p` : ''})
+          ({group.points?.length || 0}{hasPolygons ? ` + ${group.polygons.length}п` : ''})
         </span>
       </div>
 
@@ -41,7 +42,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
           {/* Radius controls */}
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <label className="text-xs text-gray-600 w-12">Radius:</label>
+              <label className="text-xs text-gray-600 w-16">Радіус:</label>
               <input
                 type="number"
                 min="0"
@@ -53,7 +54,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
               />
               <span className="text-xs text-gray-500">м</span>
             </div>
-            <div className="flex gap-1 ml-12">
+            <div className="flex gap-1 ml-16">
               {[0, 500, 1000, 2000].map(r => (
                 <button
                   key={r}
@@ -71,9 +72,24 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
             </div>
           </div>
 
+          {/* Opacity slider */}
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 w-16">Яскравість:</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value={opacity}
+              onChange={(e) => onOpacityChange && onOpacityChange(parseInt(e.target.value))}
+              className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+              style={{ accentColor: settings.color }}
+            />
+            <span className="text-xs text-gray-600 w-8">{opacity}%</span>
+          </div>
+
           {/* Color picker */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-600 w-12">Color:</label>
+            <label className="text-xs text-gray-600 w-16">Колір:</label>
             <input
               type="color"
               value={settings.color}
@@ -87,7 +103,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
 
           {/* Icon selector */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-600 w-12">Icon:</label>
+            <label className="text-xs text-gray-600 w-16">Іконка:</label>
             <div className="flex gap-1">
               {ICON_OPTIONS.map(({ type, label, title }) => (
                 <button
@@ -109,7 +125,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
 
           {/* Labels toggle */}
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-600 w-12">Labels:</label>
+            <label className="text-xs text-gray-600 w-16">Підписи:</label>
             <input
               type="checkbox"
               id={`labels-${group.id}`}
@@ -121,7 +137,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
               htmlFor={`labels-${group.id}`}
               className="text-xs text-gray-600 cursor-pointer"
             >
-              {settings.labelsVisible ? 'On' : 'Off'}
+              {settings.labelsVisible ? 'Увімк' : 'Вимк'}
             </label>
           </div>
 
@@ -139,7 +155,7 @@ function GroupControl({ group, settings, onToggle, onTogglePolygons, onToggleLab
                 htmlFor={`polygons-${group.id}`}
                 className="text-xs text-gray-600 cursor-pointer"
               >
-                Показать полигоны ({group.polygons.length})
+                Показати полігони ({group.polygons.length})
               </label>
             </div>
           )}

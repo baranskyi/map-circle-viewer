@@ -17,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.16.3 (Quetzal)';
+const APP_VERSION = '2.16.4 (Quetzal)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -107,7 +107,8 @@ function MapApp() {
             labelsVisible: true,
             radius: group.default_radius || group.defaultRadius || 1000,
             color: group.color || group.defaultColor || '#FF5252',
-            iconType: 'circle'
+            iconType: 'circle',
+            opacity: 50
           };
         }
       });
@@ -217,6 +218,17 @@ function MapApp() {
       [groupId]: {
         ...prev[groupId],
         iconType
+      }
+    }));
+  };
+
+  // Update group opacity
+  const updateOpacity = (groupId, opacity) => {
+    setGroupSettings(prev => ({
+      ...prev,
+      [groupId]: {
+        ...prev[groupId],
+        opacity
       }
     }));
   };
@@ -404,6 +416,7 @@ function MapApp() {
                     onRadiusChange={updateRadius}
                     onColorChange={updateColor}
                     onIconChange={updateIcon}
+                    onOpacityChange={updateOpacity}
                     onToggleAll={(visible) => toggleAllGroups(visible, currentMapGroups)}
                   />
                 </div>
@@ -439,6 +452,7 @@ function MapApp() {
               onRadiusChange={updateRadius}
               onColorChange={updateColor}
               onIconChange={updateIcon}
+              onOpacityChange={updateOpacity}
               onToggleAll={(visible) => toggleAllGroups(visible, currentMapGroups)}
             />
           )}
