@@ -6,7 +6,7 @@ import 'leaflet.heat';
 /**
  * HeatmapInstructionModal - Modal with heatmap methodology explanation
  */
-function HeatmapInstructionModal({ isOpen, onClose }) {
+export function HeatmapInstructionModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (

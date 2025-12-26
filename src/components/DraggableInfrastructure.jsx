@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { userPreferencesApi } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
 import InfoTooltip from './InfoTooltip';
+import { HeatmapInstructionModal } from './HeatmapLayer';
 
 // Default layer order
 const DEFAULT_ORDER = [
@@ -96,6 +97,7 @@ export default function DraggableInfrastructure({
 }) {
   const { user } = useAuthStore();
   const [layerOrder, setLayerOrder] = useState(DEFAULT_ORDER);
+  const [showHeatmapInstruction, setShowHeatmapInstruction] = useState(false);
 
   // Load saved order on mount
   useEffect(() => {
@@ -337,11 +339,19 @@ export default function DraggableInfrastructure({
         <div className="mt-4 pt-3 border-t border-gray-200">
           <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
             🔥 Теплова карта
-            <InfoTooltip
-              text="Показує активність людей у різних районах Києва за годинами та днями тижня"
-              position="bottom"
-            />
+            <button
+              onClick={() => setShowHeatmapInstruction(true)}
+              className="text-xs text-blue-500 hover:text-blue-700 hover:underline ml-auto font-normal"
+            >
+              Інструкція
+            </button>
           </h3>
+
+          {/* Instruction Modal */}
+          <HeatmapInstructionModal
+            isOpen={showHeatmapInstruction}
+            onClose={() => setShowHeatmapInstruction(false)}
+          />
 
           {/* Toggle */}
           <div className="flex items-center gap-2 mb-2">
