@@ -17,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.15.5 (Puffin)';
+const APP_VERSION = '2.16.0 (Puffin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -27,6 +27,9 @@ function MapApp() {
   const [localMapData, setLocalMapData] = useState(defaultMapData);
   const [center, setCenter] = useState(defaultCenter);
   const [zoom, setZoom] = useState(defaultZoom);
+
+  // All loaded groups from all maps (accumulated)
+  const [allLoadedGroups, setAllLoadedGroups] = useState([]);
 
   // Group settings: visibility, radius, color
   const [groupSettings, setGroupSettings] = useState({});
@@ -74,14 +77,28 @@ function MapApp() {
     }
   }, []);
 
-  // Get active groups based on mode
+  // Get active groups for current map view (UI panel)
   const activeGroups = mode === 'supabase' && currentMap ? groups : localMapData.groups;
+
+  // Accumulate groups from loaded maps
+  useEffect(() => {
+    if (mode === 'supabase' && currentMap && groups.length > 0) {
+      setAllLoadedGroups(prev => {
+        const existingIds = new Set(prev.map(g => g.id));
+        const newGroups = groups
+          .filter(g => !existingIds.has(g.id))
+          .map(g => ({ ...g, mapId: currentMap.id, mapName: currentMap.name }));
+        return [...prev, ...newGroups];
+      });
+    }
+  }, [mode, currentMap, groups]);
 
   // Initialize group settings when groups change - preserve ALL existing settings
   useEffect(() => {
+    const groupsToInit = mode === 'supabase' ? allLoadedGroups : localMapData.groups;
     setGroupSettings(prev => {
       const settings = { ...prev }; // Keep ALL previous settings (across all maps)
-      activeGroups.forEach(group => {
+      groupsToInit.forEach(group => {
         // Only add settings for NEW groups, preserve existing
         if (!settings[group.id]) {
           settings[group.id] = {
@@ -96,7 +113,7 @@ function MapApp() {
       });
       return settings;
     });
-  }, [activeGroups]);
+  }, [allLoadedGroups, localMapData.groups, mode]);
 
   // Handle map selection from MapSelector
   const handleMapSelect = async (mapId) => {
@@ -212,22 +229,47 @@ function MapApp() {
     setZoom(defaultZoom);
   };
 
-  // Toggle all groups visibility
-  const toggleAllGroups = (visible) => {
+  // Toggle all groups visibility (optionally only for specific groups)
+  const toggleAllGroups = (visible, targetGroups = null) => {
     setGroupSettings(prev => {
       const updated = { ...prev };
-      Object.keys(updated).forEach(groupId => {
-        updated[groupId] = {
-          ...updated[groupId],
-          visible
-        };
+      const groupIds = targetGroups
+        ? targetGroups.map(g => g.id)
+        : Object.keys(updated);
+      groupIds.forEach(groupId => {
+        if (updated[groupId]) {
+          updated[groupId] = {
+            ...updated[groupId],
+            visible
+          };
+        }
       });
       return updated;
     });
   };
 
+  // All groups to display on map (from all loaded maps)
+  const allGroupsForMap = mode === 'supabase' ? allLoadedGroups : localMapData.groups;
+
   // Transform groups for MapView (normalize structure)
-  const normalizedGroups = activeGroups.map(group => ({
+  const normalizedGroups = allGroupsForMap.map(group => ({
+    ...group,
+    id: group.id,
+    name: group.name,
+    mapName: group.mapName || '',
+    defaultRadius: group.default_radius || group.defaultRadius || 1000,
+    defaultColor: group.color || group.defaultColor || '#FF5252',
+    points: (group.points || []).map(point => ({
+      ...point,
+      lat: point.lat,
+      lng: point.lng,
+      name: point.name
+    })),
+    polygons: group.polygons || []
+  }));
+
+  // Groups for current map's control panel (only current map)
+  const currentMapGroups = activeGroups.map(group => ({
     ...group,
     id: group.id,
     name: group.name,
@@ -350,7 +392,7 @@ function MapApp() {
 
                   {/* Groups in this map */}
                   <ControlPanel
-                    groups={normalizedGroups}
+                    groups={currentMapGroups}
                     groupSettings={groupSettings}
                     onToggle={toggleGroup}
                     onTogglePolygons={togglePolygons}
@@ -358,7 +400,7 @@ function MapApp() {
                     onRadiusChange={updateRadius}
                     onColorChange={updateColor}
                     onIconChange={updateIcon}
-                    onToggleAll={toggleAllGroups}
+                    onToggleAll={(visible) => toggleAllGroups(visible, currentMapGroups)}
                   />
                 </div>
               )}
@@ -385,7 +427,7 @@ function MapApp() {
           {/* Control Panel - only for local mode (not when Supabase map selected) */}
           {!(currentMap && mode === 'supabase') && (
             <ControlPanel
-              groups={normalizedGroups}
+              groups={currentMapGroups}
               groupSettings={groupSettings}
               onToggle={toggleGroup}
               onTogglePolygons={togglePolygons}
@@ -393,7 +435,7 @@ function MapApp() {
               onRadiusChange={updateRadius}
               onColorChange={updateColor}
               onIconChange={updateIcon}
-              onToggleAll={toggleAllGroups}
+              onToggleAll={(visible) => toggleAllGroups(visible, currentMapGroups)}
             />
           )}
 
