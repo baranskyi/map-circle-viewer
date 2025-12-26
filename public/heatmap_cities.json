@@ -1,0 +1,76 @@
+{
+  "cities": {
+    "kyiv": {
+      "name": "Київ",
+      "name_en": "kyiv",
+      "center": [
+        50.4501,
+        30.5234
+      ],
+      "file": "heatmap_kyiv.json",
+      "available": true
+    },
+    "odesa": {
+      "name": "Одеса",
+      "name_en": "odesa",
+      "center": [
+        46.4825,
+        30.7233
+      ],
+      "file": "heatmap_odesa.json",
+      "available": true
+    },
+    "lviv": {
+      "name": "Львів",
+      "name_en": "lviv",
+      "center": [
+        49.8397,
+        24.0297
+      ],
+      "file": "heatmap_lviv.json",
+      "available": true
+    },
+    "vinnytsia": {
+      "name": "Вінниця",
+      "name_en": "vinnytsia",
+      "center": [
+        49.2331,
+        28.4682
+      ],
+      "file": "heatmap_vinnytsia.json",
+      "available": true
+    },
+    "bila_tserkva": {
+      "name": "Біла Церква",
+      "name_en": "bila_tserkva",
+      "center": [
+        49.7988,
+        30.1188
+      ],
+      "file": "heatmap_bila_tserkva.json",
+      "available": true
+    },
+    "boryspil": {
+      "name": "Бориспіль",
+      "name_en": "boryspil",
+      "center": [
+        50.3522,
+        30.9542
+      ],
+      "file": "heatmap_boryspil.json",
+      "available": true
+    },
+    "ternopil": {
+      "name": "Тернопіль",
+      "name_en": "ternopil",
+      "center": [
+        49.5535,
+        25.5948
+      ],
+      "file": "heatmap_ternopil.json",
+      "available": true
+    }
+  },
+  "default": "kyiv",
+  "generated": "2025-12-26T13:44:16.945903"
+}

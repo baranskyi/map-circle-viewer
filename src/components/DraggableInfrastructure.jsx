@@ -93,7 +93,8 @@ export default function DraggableInfrastructure({
   showHeatmap, setShowHeatmap,
   heatmapDay, setHeatmapDay,
   heatmapHour, setHeatmapHour,
-  heatmapOpacity, setHeatmapOpacity
+  heatmapOpacity, setHeatmapOpacity,
+  heatmapCity, setHeatmapCity
 }) {
   const { user } = useAuthStore();
   const [layerOrder, setLayerOrder] = useState(DEFAULT_ORDER);
@@ -369,6 +370,26 @@ export default function DraggableInfrastructure({
 
           {showHeatmap && (
             <div className="ml-6 space-y-2">
+              {/* City selector */}
+              {setHeatmapCity && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-gray-500 w-10">Місто:</span>
+                  <select
+                    value={heatmapCity || 'kyiv'}
+                    onChange={(e) => setHeatmapCity(e.target.value)}
+                    className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded bg-white"
+                  >
+                    <option value="kyiv">Київ</option>
+                    <option value="odesa">Одеса</option>
+                    <option value="lviv">Львів</option>
+                    <option value="vinnytsia">Вінниця</option>
+                    <option value="ternopil">Тернопіль</option>
+                    <option value="bila_tserkva">Біла Церква</option>
+                    <option value="boryspil">Бориспіль</option>
+                  </select>
+                </div>
+              )}
+
               {/* Day selector */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-gray-500 w-10">День:</span>
@@ -421,28 +442,6 @@ export default function DraggableInfrastructure({
                 <span className="text-xs text-gray-600 w-8">{heatmapOpacity}%</span>
               </div>
 
-              {/* Quick presets */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-gray-500 w-10">Шаблон:</span>
-                <button
-                  onClick={() => { setHeatmapDay(0); setHeatmapHour(8); }}
-                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-                >
-                  Пн 8:00
-                </button>
-                <button
-                  onClick={() => { setHeatmapDay(0); setHeatmapHour(18); }}
-                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-                >
-                  Пн 18:00
-                </button>
-                <button
-                  onClick={() => { setHeatmapDay(5); setHeatmapHour(14); }}
-                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-                >
-                  Сб 14:00
-                </button>
-              </div>
             </div>
           )}
         </div>

@@ -58,6 +58,7 @@ function MapApp() {
   const [heatmapDay, setHeatmapDay] = useState(0);
   const [heatmapHour, setHeatmapHour] = useState(12);
   const [heatmapOpacity, setHeatmapOpacity] = useState(70);
+  const [heatmapCity, setHeatmapCity] = useState('kyiv');
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -330,6 +331,7 @@ function MapApp() {
         heatmapDay={heatmapDay}
         heatmapHour={heatmapHour}
         heatmapOpacity={heatmapOpacity}
+        heatmapCity={heatmapCity}
       />
 
       {/* Visible Points Panel */}
@@ -453,6 +455,7 @@ function MapApp() {
             heatmapDay={heatmapDay} setHeatmapDay={setHeatmapDay}
             heatmapHour={heatmapHour} setHeatmapHour={setHeatmapHour}
             heatmapOpacity={heatmapOpacity} setHeatmapOpacity={setHeatmapOpacity}
+            heatmapCity={heatmapCity} setHeatmapCity={setHeatmapCity}
           />
 
           {/* Control Panel - only for local mode (not when Supabase map selected) */}

@@ -463,6 +463,7 @@ export default function VersionMascot({ version }) {
         ))}
       </div>
       <div className="text-xs text-gray-400 mt-1 font-medium">{mascot.name}</div>
+      <div className="text-[10px] text-gray-300 mt-0.5">Copyright: Слава Баранский 2026</div>
     </div>
   );
 }

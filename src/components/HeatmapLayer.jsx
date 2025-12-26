@@ -153,17 +153,18 @@ export function HeatmapInstructionModal({ isOpen, onClose }) {
 }
 
 /**
- * HeatmapLayer - displays a heatmap of popular times for Kyiv
+ * HeatmapLayer - displays a heatmap of popular times for Ukrainian cities
  *
  * Props:
  *   visible: boolean - show/hide the layer
+ *   city: string - city key (kyiv, odesa, lviv, etc.)
  *   day: 0-6 (Mon-Sun)
  *   hour: 0-23
  *   opacity: 0-100 (percentage)
- *   data: heatmap data object or null (will load from public folder)
  */
 export default function HeatmapLayer({
   visible = false,
+  city = 'kyiv',
   day = 0,
   hour = 12,
   opacity = 70,
@@ -176,29 +177,31 @@ export default function HeatmapLayer({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load data on mount
+  // Load data when city changes
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
       setError(null);
 
       try {
-        const response = await fetch('/heatmap_data.json');
+        const response = await fetch(`/heatmap_${city}.json`);
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
         const json = await response.json();
         setData(json);
       } catch (err) {
-        console.error('Failed to load heatmap data:', err);
+        console.error(`Failed to load heatmap data for ${city}:`, err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    loadData();
-  }, []);
+    if (visible) {
+      loadData();
+    }
+  }, [city, visible]);
 
   // Compute heatmap points for current day/hour
   const heatPoints = useMemo(() => {
