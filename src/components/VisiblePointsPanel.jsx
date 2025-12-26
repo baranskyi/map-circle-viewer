@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import InfoTooltip from './InfoTooltip';
 
 export default function VisiblePointsPanel({
   points = [],
@@ -52,6 +53,10 @@ export default function VisiblePointsPanel({
       <div className="p-3 border-b border-gray-200 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm font-semibold text-gray-700">Точки на екрані</span>
+          <InfoTooltip
+            text="У сайдбарі ви побачите точки на карті, які зараз відображаються на екрані. Можна пошукати по поточному представленню та знайти points of interest, які вас цікавлять. Список оновлюється автоматично зі зміненням масштабу та позиціонуванням карти."
+            position="bottom"
+          />
           <span className="bg-blue-100 text-blue-700 text-xs px-2 py-0.5 rounded-full">
             {filteredPoints.length}
           </span>
