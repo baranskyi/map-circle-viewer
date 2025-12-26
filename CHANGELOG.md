@@ -2,6 +2,40 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.16.1] (Quetzal) - 2025-12-26
+
+### Added
+- **Active map indicators** - green dot and badge showing which maps have visible groups
+- Green highlight for maps with active points displayed on map
+- Tooltip showing active/total groups ratio (e.g., "2/5 груп активно")
+
+---
+
+## [2.16.0] (Quetzal) - 2025-12-26
+
+### Added
+- **Multi-map display** - show points from multiple maps simultaneously
+- Groups from ALL visited maps are accumulated and displayed together
+- New Quetzal mascot (colorful bird) for v2.16.x
+- CLAUDE.md with project-specific rules
+
+### Changed
+- `allLoadedGroups` state accumulates groups across map switches
+- `toggleAllGroups` now works per-map in control panel
+- **MINOR version** - significant feature addition
+
+---
+
+## [2.15.5] (Puffin) - 2025-12-26
+
+### Removed
+- **Supermarkets layer** removed from Infrastructure section
+
+### Fixed
+- **Group checkbox persistence** - settings now preserved when switching between maps
+
+---
+
 ## [2.15.4] (Puffin) - 2025-12-25
 
 ### Changed

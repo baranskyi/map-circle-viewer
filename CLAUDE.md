@@ -1,5 +1,32 @@
 # Map Circle Viewer - Claude Code Rules
 
+## Git Push Rules
+
+**MANDATORY** on EVERY version push to GitHub:
+
+1. **Update CHANGELOG.md** at the TOP with new version entry:
+   ```markdown
+   ## [X.Y.Z] (Mascot) - YYYY-MM-DD
+
+   ### Added
+   - **Feature name** - description
+
+   ### Changed
+   - **Change description**
+
+   ### Fixed
+   - **Bug fix description**
+
+   ### Removed
+   - **Removed feature**
+
+   ---
+   ```
+
+2. **Include CHANGELOG.md in commit** before pushing
+
+---
+
 ## Version Mascot Rules
 
 **MANDATORY** on MINOR version bump (e.g., v2.15.x -> v2.16.0):
