@@ -2,6 +2,15 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.16.2] (Quetzal) - 2025-12-26
+
+### Changed
+- **Badge shows points count** - now displays number of visible points (not groups)
+- **Smaller badge** - reduced size by 1.5x (text-[10px], smaller padding)
+- **Smaller indicator dot** - w-2 h-2 instead of w-2.5 h-2.5
+
+---
+
 ## [2.16.1] (Quetzal) - 2025-12-26
 
 ### Added

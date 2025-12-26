@@ -7,11 +7,19 @@ export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSe
   const { user } = useAuthStore();
   const { maps, loading, error, fetchMaps, createMap, deleteMap } = useDataStore();
 
-  // Calculate which maps have at least one visible group
+  // Calculate which maps have visible points
   const getMapActiveStatus = (mapId) => {
     const mapGroups = allLoadedGroups.filter(g => g.mapId === mapId);
-    const activeCount = mapGroups.filter(g => groupSettings[g.id]?.visible).length;
-    return { hasGroups: mapGroups.length > 0, activeCount, totalGroups: mapGroups.length };
+    const activeGroups = mapGroups.filter(g => groupSettings[g.id]?.visible);
+    const visiblePointsCount = activeGroups.reduce((sum, g) => sum + (g.points?.length || 0), 0);
+    const totalPointsCount = mapGroups.reduce((sum, g) => sum + (g.points?.length || 0), 0);
+    return {
+      hasGroups: mapGroups.length > 0,
+      activeGroups: activeGroups.length,
+      totalGroups: mapGroups.length,
+      visiblePoints: visiblePointsCount,
+      totalPoints: totalPointsCount
+    };
   };
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
@@ -105,7 +113,7 @@ export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSe
       <div className="space-y-2 max-h-48 overflow-y-auto">
         {maps.map(map => {
           const status = getMapActiveStatus(map.id);
-          const isActive = status.activeCount > 0;
+          const isActive = status.visiblePoints > 0;
 
           return (
             <div
@@ -121,12 +129,12 @@ export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSe
                 {/* Active indicator */}
                 {status.hasGroups && (
                   <div
-                    className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                    className={`w-2 h-2 rounded-full flex-shrink-0 ${
                       isActive ? 'bg-green-500' : 'bg-gray-300'
                     }`}
                     title={isActive
-                      ? `${status.activeCount}/${status.totalGroups} груп активно`
-                      : 'Немає активних груп'
+                      ? `${status.visiblePoints}/${status.totalPoints} точок відображено`
+                      : 'Немає активних точок'
                     }
                   />
                 )}
@@ -140,10 +148,10 @@ export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSe
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {/* Active count badge */}
+                {/* Visible points count badge */}
                 {isActive && (
-                  <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded-full font-medium">
-                    {status.activeCount}
+                  <span className="text-[10px] bg-green-500 text-white px-1 py-0.5 rounded-full font-medium min-w-[18px] text-center leading-none">
+                    {status.visiblePoints}
                   </span>
                 )}
                 <span className="text-xs text-gray-400 capitalize">{map.access_level}</span>
