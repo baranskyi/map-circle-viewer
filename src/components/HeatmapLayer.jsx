@@ -34,7 +34,7 @@ export default function HeatmapLayer({
       setError(null);
 
       try {
-        const response = await fetch('/heatmap_compact.json');
+        const response = await fetch('/heatmap_data.json');
         if (!response.ok) {
           throw new Error(`HTTP ${response.status}`);
         }
@@ -141,7 +141,7 @@ export function HeatmapControls({
 
   return (
     <div className="space-y-3">
-      {/* Toggle */}
+      {/* Toggle with info tooltip */}
       <div className="flex items-center gap-2">
         <input
           type="checkbox"
@@ -153,6 +153,13 @@ export function HeatmapControls({
         <label htmlFor="heatmap-toggle" className="font-medium text-sm cursor-pointer">
           🔥 Тепловая карта
         </label>
+        <div className="relative group">
+          <span className="text-gray-400 cursor-help text-xs">ⓘ</span>
+          <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded-lg shadow-lg z-50">
+            <p className="mb-1"><strong>Как это работает:</strong></p>
+            <p>Тепловая карта показывает ожидаемую посещаемость районов Киева. Данные получены из 15,766 POI (рестораны, офисы, метро, ТРЦ и др.) через OpenStreetMap. Интенсивность рассчитана по типичным паттернам посещаемости для каждого типа заведений с учетом их расположения относительно центра города.</p>
+          </div>
+        </div>
       </div>
 
       {visible && (
@@ -209,36 +216,6 @@ export function HeatmapControls({
             <span className="text-xs text-gray-600 w-8">{opacity}%</span>
           </div>
 
-          {/* Quick time presets */}
-          <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-600 w-12">Шаблон:</label>
-            <div className="flex gap-1 flex-wrap">
-              <button
-                onClick={() => { onDayChange(0); onHourChange(8); }}
-                className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-              >
-                Пн 8:00
-              </button>
-              <button
-                onClick={() => { onDayChange(0); onHourChange(18); }}
-                className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-              >
-                Пн 18:00
-              </button>
-              <button
-                onClick={() => { onDayChange(5); onHourChange(14); }}
-                className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-              >
-                Сб 14:00
-              </button>
-              <button
-                onClick={() => { onDayChange(6); onHourChange(12); }}
-                className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
-              >
-                Вс 12:00
-              </button>
-            </div>
-          </div>
         </>
       )}
     </div>

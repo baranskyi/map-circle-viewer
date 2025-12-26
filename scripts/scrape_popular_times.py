@@ -158,16 +158,37 @@ def scrape_by_coordinates(lat: float, lng: float, name: str, poi_type: str) -> O
         return None
 
 
-def generate_synthetic_populartimes(poi_type: str) -> list:
+import random
+import math
+
+# Kyiv city center coordinates for location-based modulation
+KYIV_CENTER = (50.4501, 30.5234)
+
+def calculate_distance_from_center(lat: float, lng: float) -> float:
+    """Calculate distance from Kyiv center in km (approximate)."""
+    lat_diff = abs(lat - KYIV_CENTER[0]) * 111  # ~111 km per degree lat
+    lng_diff = abs(lng - KYIV_CENTER[1]) * 111 * math.cos(math.radians(lat))
+    return math.sqrt(lat_diff**2 + lng_diff**2)
+
+
+def generate_synthetic_populartimes(poi_type: str, poi_id: str = None, lat: float = None, lng: float = None) -> list:
     """
-    Generate synthetic popular times based on POI type.
+    Generate synthetic popular times based on POI type with realistic variation.
 
     This is a fallback when real data isn't available.
-    Uses typical patterns for different business types.
-    """
-    # Typical patterns by day of week (Mon=0, Sun=6)
-    # Values are relative popularity (0-100)
+    Uses typical patterns + random variation + location modulation.
 
+    Args:
+        poi_type: Type of POI (restaurant, cafe, gym, etc.)
+        poi_id: Unique ID for reproducible randomness
+        lat, lng: Coordinates for location-based modulation
+    """
+    # Seed random with poi_id for reproducibility
+    if poi_id:
+        random.seed(hash(poi_id) % (2**32))
+
+    # Base patterns by day of week (Mon=0, Sun=6)
+    # Values are relative popularity (0-100)
     patterns = {
         'restaurant': {
             'weekday': [0, 0, 0, 0, 0, 0, 10, 15, 20, 15, 10, 20, 60, 70, 40, 20, 30, 50, 80, 100, 90, 70, 40, 10],
@@ -197,6 +218,30 @@ def generate_synthetic_populartimes(poi_type: str) -> list:
             'weekday': [0, 0, 0, 0, 0, 0, 10, 50, 90, 100, 100, 90, 70, 80, 100, 100, 90, 70, 30, 10, 5, 0, 0, 0],
             'weekend': [0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 15, 15, 10, 10, 10, 5, 0, 0, 0, 0, 0, 0, 0, 0]
         },
+        'bar': {
+            'weekday': [5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 10, 20, 20, 15, 20, 30, 50, 70, 90, 100, 100, 80, 30],
+            'weekend': [10, 5, 0, 0, 0, 0, 0, 0, 0, 5, 10, 20, 30, 30, 25, 30, 40, 60, 80, 100, 100, 100, 90, 50]
+        },
+        'nightclub': {
+            'weekday': [20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 30, 50, 70, 90, 100, 80],
+            'weekend': [50, 30, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 30, 50, 80, 100, 100, 100, 90]
+        },
+        'pharmacy': {
+            'weekday': [0, 0, 0, 0, 0, 0, 5, 30, 70, 100, 90, 70, 80, 70, 60, 70, 80, 90, 60, 30, 10, 5, 0, 0],
+            'weekend': [0, 0, 0, 0, 0, 0, 0, 10, 30, 60, 80, 100, 90, 70, 50, 40, 30, 20, 10, 5, 0, 0, 0, 0]
+        },
+        'bank': {
+            'weekday': [0, 0, 0, 0, 0, 0, 0, 20, 60, 100, 90, 80, 90, 100, 80, 70, 60, 50, 20, 5, 0, 0, 0, 0],
+            'weekend': [0, 0, 0, 0, 0, 0, 0, 0, 10, 30, 50, 60, 50, 30, 20, 10, 5, 0, 0, 0, 0, 0, 0, 0]
+        },
+        'park': {
+            'weekday': [0, 0, 0, 0, 0, 5, 20, 40, 50, 40, 30, 40, 50, 40, 30, 40, 60, 80, 100, 80, 50, 30, 10, 0],
+            'weekend': [0, 0, 0, 0, 0, 0, 5, 20, 40, 60, 80, 100, 100, 100, 90, 80, 70, 60, 50, 40, 20, 10, 5, 0]
+        },
+        'museum': {
+            'weekday': [0, 0, 0, 0, 0, 0, 0, 0, 10, 40, 70, 90, 100, 90, 80, 70, 60, 40, 20, 5, 0, 0, 0, 0],
+            'weekend': [0, 0, 0, 0, 0, 0, 0, 5, 20, 50, 80, 100, 100, 100, 90, 80, 60, 40, 20, 10, 5, 0, 0, 0]
+        },
         'default': {
             'weekday': [0, 0, 0, 0, 0, 0, 10, 30, 50, 60, 70, 70, 80, 70, 60, 70, 80, 90, 100, 80, 50, 30, 10, 0],
             'weekend': [0, 0, 0, 0, 0, 0, 5, 20, 40, 60, 80, 90, 100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 5, 0]
@@ -205,17 +250,51 @@ def generate_synthetic_populartimes(poi_type: str) -> list:
 
     pattern = patterns.get(poi_type, patterns['default'])
 
+    # Random modifiers for this POI (reproducible via poi_id seed)
+    intensity_mod = random.uniform(0.5, 1.5)  # Overall intensity ±50%
+    time_shift = random.randint(-2, 2)  # Peak hours shift ±2 hours
+    day_variation = [random.uniform(0.7, 1.3) for _ in range(7)]  # Per-day variation
+
+    # Location-based modulation (center is busier)
+    location_mod = 1.0
+    if lat is not None and lng is not None:
+        dist_km = calculate_distance_from_center(lat, lng)
+        # Center (0-3km): 1.2x, Middle (3-8km): 1.0x, Suburbs (8+km): 0.7x
+        if dist_km < 3:
+            location_mod = 1.2 - (dist_km / 3) * 0.2
+        elif dist_km < 8:
+            location_mod = 1.0 - (dist_km - 3) / 5 * 0.2
+        else:
+            location_mod = max(0.5, 0.8 - (dist_km - 8) / 15 * 0.3)
+
     # Generate 7 days (Mon-Sun)
     result = []
     for day_idx in range(7):
         is_weekend = day_idx >= 5
-        day_pattern = pattern['weekend'] if is_weekend else pattern['weekday']
+        base_pattern = pattern['weekend'] if is_weekend else pattern['weekday']
+
+        # Apply time shift
+        shifted_pattern = base_pattern[time_shift:] + base_pattern[:time_shift] if time_shift > 0 else \
+                         base_pattern[time_shift:] + base_pattern[:time_shift]
+
+        # Apply all modulations with per-hour noise
+        modified_pattern = []
+        for hour, value in enumerate(shifted_pattern):
+            # Per-hour random noise ±15%
+            hour_noise = random.uniform(0.85, 1.15)
+            # Combine all modifiers
+            new_value = value * intensity_mod * day_variation[day_idx] * location_mod * hour_noise
+            # Clamp to 0-100
+            modified_pattern.append(int(max(0, min(100, new_value))))
 
         day_data = {
             'name': ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][day_idx],
-            'data': day_pattern
+            'data': modified_pattern
         }
         result.append(day_data)
+
+    # Reset random seed
+    random.seed()
 
     return result
 
@@ -286,7 +365,12 @@ def main():
 
         # Get popular times data
         if args.synthetic:
-            pop_times = generate_synthetic_populartimes(poi['poi_type'])
+            pop_times = generate_synthetic_populartimes(
+                poi['poi_type'],
+                poi_id=osm_id,
+                lat=poi['lat'],
+                lng=poi['lng']
+            )
         else:
             # Try API-based scraping
             pop_times = None
@@ -300,7 +384,12 @@ def main():
 
             if not pop_times:
                 # Fallback to synthetic
-                pop_times = generate_synthetic_populartimes(poi['poi_type'])
+                pop_times = generate_synthetic_populartimes(
+                    poi['poi_type'],
+                    poi_id=osm_id,
+                    lat=poi['lat'],
+                    lng=poi['lng']
+                )
 
             time.sleep(args.delay)
 
