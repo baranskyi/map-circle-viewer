@@ -2,11 +2,7 @@ import GroupControl from './GroupControl';
 
 function ControlPanel({ groups, groupSettings, onToggle, onTogglePolygons, onToggleLabels, onRadiusChange, onColorChange, onIconChange, onToggleAll }) {
   if (groups.length === 0) {
-    return (
-      <div className="text-gray-500 text-center py-4">
-        No groups loaded. Upload a KMZ file to get started.
-      </div>
-    );
+    return null;
   }
 
   // Calculate if all groups are visible
