@@ -3,9 +3,16 @@ import { useDataStore } from '../stores/dataStore';
 import { useAuthStore } from '../stores/authStore';
 import InfoTooltip from './InfoTooltip';
 
-export default function MapSelector({ onMapSelect }) {
+export default function MapSelector({ onMapSelect, allLoadedGroups = [], groupSettings = {} }) {
   const { user } = useAuthStore();
   const { maps, loading, error, fetchMaps, createMap, deleteMap } = useDataStore();
+
+  // Calculate which maps have at least one visible group
+  const getMapActiveStatus = (mapId) => {
+    const mapGroups = allLoadedGroups.filter(g => g.mapId === mapId);
+    const activeCount = mapGroups.filter(g => groupSettings[g.id]?.visible).length;
+    return { hasGroups: mapGroups.length > 0, activeCount, totalGroups: mapGroups.length };
+  };
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [newMapName, setNewMapName] = useState('');
@@ -96,32 +103,63 @@ export default function MapSelector({ onMapSelect }) {
       )}
 
       <div className="space-y-2 max-h-48 overflow-y-auto">
-        {maps.map(map => (
-          <div
-            key={map.id}
-            onClick={() => onMapSelect(map.id)}
-            className="flex items-center justify-between p-2 bg-gray-50 rounded cursor-pointer hover:bg-gray-100 group"
-          >
-            <div className="flex-1 min-w-0">
-              <div className="font-medium text-sm truncate">{map.name}</div>
-              {map.description && (
-                <div className="text-xs text-gray-400 truncate">{map.description}</div>
-              )}
+        {maps.map(map => {
+          const status = getMapActiveStatus(map.id);
+          const isActive = status.activeCount > 0;
+
+          return (
+            <div
+              key={map.id}
+              onClick={() => onMapSelect(map.id)}
+              className={`flex items-center justify-between p-2 rounded cursor-pointer group transition-colors ${
+                isActive
+                  ? 'bg-green-50 border border-green-200 hover:bg-green-100'
+                  : 'bg-gray-50 hover:bg-gray-100'
+              }`}
+            >
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                {/* Active indicator */}
+                {status.hasGroups && (
+                  <div
+                    className={`w-2.5 h-2.5 rounded-full flex-shrink-0 ${
+                      isActive ? 'bg-green-500' : 'bg-gray-300'
+                    }`}
+                    title={isActive
+                      ? `${status.activeCount}/${status.totalGroups} груп активно`
+                      : 'Немає активних груп'
+                    }
+                  />
+                )}
+                <div className="min-w-0">
+                  <div className={`font-medium text-sm truncate ${isActive ? 'text-green-800' : ''}`}>
+                    {map.name}
+                  </div>
+                  {map.description && (
+                    <div className="text-xs text-gray-400 truncate">{map.description}</div>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {/* Active count badge */}
+                {isActive && (
+                  <span className="text-xs bg-green-500 text-white px-1.5 py-0.5 rounded-full font-medium">
+                    {status.activeCount}
+                  </span>
+                )}
+                <span className="text-xs text-gray-400 capitalize">{map.access_level}</span>
+                {map.access_level === 'owner' && (
+                  <button
+                    onClick={(e) => handleDeleteClick(map, e)}
+                    className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-1"
+                    title="Видалити"
+                  >
+                    🗑️
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-400 capitalize">{map.access_level}</span>
-              {map.access_level === 'owner' && (
-                <button
-                  onClick={(e) => handleDeleteClick(map, e)}
-                  className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity p-1"
-                  title="Видалити"
-                >
-                  🗑️
-                </button>
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Create Modal */}

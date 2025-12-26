@@ -17,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.16.0 (Quetzal)';
+const APP_VERSION = '2.16.1 (Quetzal)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -355,7 +355,11 @@ function MapApp() {
             <div className="mb-4 p-3 bg-blue-50 rounded-lg">
               {/* Show map list when showingMapList is true */}
               {showingMapList && (
-                <MapSelector onMapSelect={handleMapSelect} />
+                <MapSelector
+                  onMapSelect={handleMapSelect}
+                  allLoadedGroups={allLoadedGroups}
+                  groupSettings={groupSettings}
+                />
               )}
 
               {/* Selected Map Content */}
