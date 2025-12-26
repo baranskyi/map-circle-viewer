@@ -2,10 +2,17 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.17.8] (Fennec) - 2025-12-26
+
+### Fixed
+- **Layer switcher dropdown z-index** - added z-index to container level (1001 vs 1000 for ruler)
+
+---
+
 ## [2.17.7] (Fennec) - 2025-12-26
 
 ### Fixed
-- **Layer switcher dropdown z-index** - dropdown now appears above ruler button
+- **Layer switcher dropdown z-index** - dropdown now appears above ruler button (attempt 1)
 
 ---
 

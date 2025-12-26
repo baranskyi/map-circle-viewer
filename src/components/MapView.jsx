@@ -124,7 +124,7 @@ function DistanceMeasureButton({ active, onToggle, leftPanelCollapsed }) {
   const leftPosition = leftPanelCollapsed ? '60px' : '340px';
 
   return (
-    <div className="leaflet-top leaflet-left" style={{ marginTop: '60px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '60px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease', zIndex: 1000 }}>
       <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
         <button
           onClick={onToggle}
@@ -183,7 +183,7 @@ function LayerControl({ currentLayer, onLayerChange, leftPanelCollapsed }) {
   const leftPosition = leftPanelCollapsed ? '60px' : '340px';
 
   return (
-    <div className="leaflet-top leaflet-left" style={{ marginTop: '16px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease' }}>
+    <div className="leaflet-top leaflet-left" style={{ marginTop: '16px', marginLeft: leftPosition, transition: 'margin-left 0.2s ease', zIndex: 1001 }}>
       <div className="leaflet-control leaflet-bar" style={{ border: 'none' }}>
         <div className="relative">
           <button
@@ -197,7 +197,7 @@ function LayerControl({ currentLayer, onLayerChange, leftPanelCollapsed }) {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px] z-[2000]">
+            <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px] z-[1002]">
               {Object.entries(TILE_LAYERS).map(([key, layer]) => (
                 <button
                   key={key}
