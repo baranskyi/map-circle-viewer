@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDataStore } from '../stores/dataStore';
 import { useAuthStore } from '../stores/authStore';
+import InfoTooltip from './InfoTooltip';
 
 export default function MapSelector({ onMapSelect }) {
   const { user } = useAuthStore();
@@ -56,13 +57,29 @@ export default function MapSelector({ onMapSelect }) {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-700">Мої карти</h3>
-        <button
-          onClick={() => setShowCreateModal(true)}
-          className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-        >
-          + Нова
-        </button>
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold text-gray-700">Мої карти</h3>
+          <InfoTooltip
+            text="Тут розташовуються ваші експорти з Google Maps, на яких ви можете наносити точки та зони неправильні об'єкти для аналізу."
+            position="bottom"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <a
+            href="https://www.loom.com/share/5b3aee8d2b074bd79ffb4f826bcc3fce"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
+          >
+            Інструкція
+          </a>
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+          >
+            + Нова
+          </button>
+        </div>
       </div>
 
       {loading && (
