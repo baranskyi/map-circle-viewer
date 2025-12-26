@@ -9,7 +9,6 @@ import MapSelector from './components/MapSelector';
 import DraggableInfrastructure from './components/DraggableInfrastructure';
 import VersionMascot from './components/VersionMascot';
 import VisiblePointsPanel from './components/VisiblePointsPanel';
-import PixelLogo from './components/PixelLogo';
 import MascotGallery from './components/MascotGallery';
 import { defaultMapData, defaultCenter, defaultZoom } from './utils/defaultData';
 import { calculateCenter } from './utils/kmzParser';
@@ -300,10 +299,7 @@ function MapApp() {
       <div className="absolute top-4 left-4 z-[1001] max-h-[calc(100vh-2rem)] overflow-y-auto overflow-x-hidden">
         <div className="bg-white rounded-lg shadow-lg p-4 w-80">
           <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <PixelLogo size={28} />
-              <h1 className="text-base font-bold">Map Circle Viewer</h1>
-            </div>
+            <h1 className="text-base font-bold">Map Circle Viewer</h1>
             <div className="flex items-center gap-1">
               <UserMenu />
               <button
