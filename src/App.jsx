@@ -77,20 +77,27 @@ function MapApp() {
   // Get active groups based on mode
   const activeGroups = mode === 'supabase' && currentMap ? groups : localMapData.groups;
 
-  // Initialize group settings when groups change
+  // Initialize group settings when groups change - preserve existing visibility
   useEffect(() => {
-    const settings = {};
-    activeGroups.forEach(group => {
-      settings[group.id] = {
-        visible: false,
-        polygonsVisible: true,
-        labelsVisible: true,
-        radius: group.default_radius || group.defaultRadius || 1000,
-        color: group.color || group.defaultColor || '#FF5252',
-        iconType: 'circle'
-      };
+    setGroupSettings(prev => {
+      const settings = {};
+      activeGroups.forEach(group => {
+        // Preserve existing settings if they exist, otherwise initialize
+        if (prev[group.id]) {
+          settings[group.id] = prev[group.id];
+        } else {
+          settings[group.id] = {
+            visible: false,
+            polygonsVisible: true,
+            labelsVisible: true,
+            radius: group.default_radius || group.defaultRadius || 1000,
+            color: group.color || group.defaultColor || '#FF5252',
+            iconType: 'circle'
+          };
+        }
+      });
+      return settings;
     });
-    setGroupSettings(settings);
   }, [activeGroups]);
 
   // Handle map selection from MapSelector
