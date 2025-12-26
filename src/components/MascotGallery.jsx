@@ -2,6 +2,7 @@ import { MASCOTS } from './VersionMascot';
 
 // Version to mascot mapping (newest first)
 const VERSION_HISTORY = [
+  { version: '2.17.x', animal: 'fennec' },
   { version: '2.16.x', animal: 'quetzal' },
   { version: '2.15.x', animal: 'puffin' },
   { version: '2.14.x', animal: 'okapi' },

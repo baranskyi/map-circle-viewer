@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import { MetroLayer, MallsLayer, FitnessLayer, KyivstarLayer } from './POILayers';
+import HeatmapLayer from './HeatmapLayer';
 
 // Available map tile layers
 const TILE_LAYERS = {
@@ -268,7 +269,12 @@ function MapView({
   highlightedPointId,
   onMapReady,
   // Left panel state for layer switcher positioning
-  leftPanelCollapsed = false
+  leftPanelCollapsed = false,
+  // Heatmap props
+  showHeatmap = false,
+  heatmapDay = 0,
+  heatmapHour = 12,
+  heatmapOpacity = 70
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];
@@ -322,6 +328,14 @@ function MapView({
       <FitnessLayer visible={showFitness} radius={fitnessRadius} opacity={fitnessOpacity} onDataLoaded={setFitnessPoints} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" opacityMultiplier={kyivstarActiveOpacity} />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" opacityMultiplier={kyivstarTerminatedOpacity} />
+
+      {/* Heatmap layer */}
+      <HeatmapLayer
+        visible={showHeatmap}
+        day={heatmapDay}
+        hour={heatmapHour}
+        opacity={heatmapOpacity}
+      />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];

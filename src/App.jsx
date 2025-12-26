@@ -17,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.16.4 (Quetzal)';
+const APP_VERSION = '2.17.0 (Fennec)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -52,6 +52,12 @@ function MapApp() {
   const [fitnessOpacity, setFitnessOpacity] = useState(50);
   const [kyivstarActiveOpacity, setKyivstarActiveOpacity] = useState(100);
   const [kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity] = useState(100);
+
+  // Heatmap settings
+  const [showHeatmap, setShowHeatmap] = useState(false);
+  const [heatmapDay, setHeatmapDay] = useState(0);
+  const [heatmapHour, setHeatmapHour] = useState(12);
+  const [heatmapOpacity, setHeatmapOpacity] = useState(70);
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -320,6 +326,10 @@ function MapApp() {
         highlightedPointId={highlightedPointId}
         onMapReady={(map) => { mapRef.current = map; }}
         leftPanelCollapsed={isLeftPanelCollapsed}
+        showHeatmap={showHeatmap}
+        heatmapDay={heatmapDay}
+        heatmapHour={heatmapHour}
+        heatmapOpacity={heatmapOpacity}
       />
 
       {/* Visible Points Panel */}
@@ -439,6 +449,10 @@ function MapApp() {
             fitnessOpacity={fitnessOpacity} setFitnessOpacity={setFitnessOpacity}
             kyivstarActiveOpacity={kyivstarActiveOpacity} setKyivstarActiveOpacity={setKyivstarActiveOpacity}
             kyivstarTerminatedOpacity={kyivstarTerminatedOpacity} setKyivstarTerminatedOpacity={setKyivstarTerminatedOpacity}
+            showHeatmap={showHeatmap} setShowHeatmap={setShowHeatmap}
+            heatmapDay={heatmapDay} setHeatmapDay={setHeatmapDay}
+            heatmapHour={heatmapHour} setHeatmapHour={setHeatmapHour}
+            heatmapOpacity={heatmapOpacity} setHeatmapOpacity={setHeatmapOpacity}
           />
 
           {/* Control Panel - only for local mode (not when Supabase map selected) */}

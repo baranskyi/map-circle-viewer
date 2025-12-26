@@ -2,6 +2,24 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.17.0] (Fennec) - 2025-12-26
+
+### Added
+- **Heatmap layer** - city-wide visit popularity visualization for Kyiv
+- **Time slider** - adjust hours (0-23) to see different time periods
+- **Day selector** - switch between days of week (Mon-Sun)
+- **Opacity control** - adjust heatmap transparency (0-100%)
+- **Quick presets** - shortcuts for common times (Mon 8:00, Mon 18:00, Sat 14:00, Sun 12:00)
+- **Fennec mascot** for v2.17.x (desert fox pixel art)
+
+### Technical
+- H3 hexagonal aggregation (resolution 8, ~461m cells)
+- Compact JSON format: 999 hexagons, 0.8MB data file
+- Data sourced from 15,766 POIs across Kyiv
+- leaflet.heat integration for smooth heatmap rendering
+
+---
+
 ## [2.16.4] (Quetzal) - 2025-12-26
 
 ### Added

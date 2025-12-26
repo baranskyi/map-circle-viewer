@@ -87,7 +87,12 @@ export default function DraggableInfrastructure({
   mallsOpacity, setMallsOpacity,
   fitnessOpacity, setFitnessOpacity,
   kyivstarActiveOpacity, setKyivstarActiveOpacity,
-  kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity
+  kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity,
+  // Heatmap states
+  showHeatmap, setShowHeatmap,
+  heatmapDay, setHeatmapDay,
+  heatmapHour, setHeatmapHour,
+  heatmapOpacity, setHeatmapOpacity
 }) {
   const { user } = useAuthStore();
   const [layerOrder, setLayerOrder] = useState(DEFAULT_ORDER);
@@ -326,6 +331,112 @@ export default function DraggableInfrastructure({
           )}
         </Droppable>
       </DragDropContext>
+
+      {/* Heatmap Controls */}
+      {setShowHeatmap && (
+        <div className="mt-4 pt-3 border-t border-gray-200">
+          <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+            🔥 Теплова карта
+            <InfoTooltip
+              text="Показує активність людей у різних районах Києва за годинами та днями тижня"
+              position="bottom"
+            />
+          </h3>
+
+          {/* Toggle */}
+          <div className="flex items-center gap-2 mb-2">
+            <input
+              type="checkbox"
+              id="heatmap-toggle"
+              checked={showHeatmap}
+              onChange={() => setShowHeatmap(!showHeatmap)}
+              className="w-4 h-4 rounded"
+            />
+            <label htmlFor="heatmap-toggle" className="text-sm cursor-pointer">
+              Показати теплову карту
+            </label>
+          </div>
+
+          {showHeatmap && (
+            <div className="ml-6 space-y-2">
+              {/* Day selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-10">День:</span>
+                <div className="flex gap-0.5">
+                  {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'].map((d, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setHeatmapDay(i)}
+                      className={`w-7 h-6 text-xs rounded transition-colors ${
+                        heatmapDay === i
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {d}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hour slider */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-10">Час:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="23"
+                  value={heatmapHour}
+                  onChange={(e) => setHeatmapHour(parseInt(e.target.value))}
+                  className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  style={{ accentColor: '#f97316' }}
+                />
+                <span className="text-xs text-gray-600 w-12 text-right font-mono">
+                  {heatmapHour.toString().padStart(2, '0')}:00
+                </span>
+              </div>
+
+              {/* Opacity slider */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-500 w-10">Ярк.:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={heatmapOpacity}
+                  onChange={(e) => setHeatmapOpacity(parseInt(e.target.value))}
+                  className="flex-1 h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  style={{ accentColor: '#f97316' }}
+                />
+                <span className="text-xs text-gray-600 w-8">{heatmapOpacity}%</span>
+              </div>
+
+              {/* Quick presets */}
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-gray-500 w-10">Шаблон:</span>
+                <button
+                  onClick={() => { setHeatmapDay(0); setHeatmapHour(8); }}
+                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Пн 8:00
+                </button>
+                <button
+                  onClick={() => { setHeatmapDay(0); setHeatmapHour(18); }}
+                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Пн 18:00
+                </button>
+                <button
+                  onClick={() => { setHeatmapDay(5); setHeatmapHour(14); }}
+                  className="px-2 py-0.5 text-xs bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Сб 14:00
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
