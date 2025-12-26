@@ -197,7 +197,7 @@ function LayerControl({ currentLayer, onLayerChange, leftPanelCollapsed }) {
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px] z-[1000]">
+            <div className="absolute right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 py-1 min-w-[160px] z-[2000]">
               {Object.entries(TILE_LAYERS).map(([key, layer]) => (
                 <button
                   key={key}
