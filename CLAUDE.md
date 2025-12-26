@@ -4,7 +4,12 @@
 
 **MANDATORY** on EVERY version push to GitHub:
 
-1. **Update CHANGELOG.md** at the TOP with new version entry:
+1. **Update APP_VERSION** in `src/App.jsx`:
+   ```javascript
+   const APP_VERSION = 'X.Y.Z (Mascot)';
+   ```
+
+2. **Update CHANGELOG.md** at the TOP with new version entry:
    ```markdown
    ## [X.Y.Z] (Mascot) - YYYY-MM-DD
 
@@ -23,7 +28,7 @@
    ---
    ```
 
-2. **Include CHANGELOG.md in commit** before pushing
+3. **Include both files in commit** before pushing
 
 ---
 

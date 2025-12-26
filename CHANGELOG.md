@@ -2,6 +2,60 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.17.5] (Fennec) - 2025-12-26
+
+### Added
+- **"Всі міста" option** - show all cities heatmap simultaneously (default)
+- **Multi-city heatmaps** - 7 Ukrainian cities:
+  - Київ (999 hexagons)
+  - Одеса (555 hexagons)
+  - Львів (254 hexagons)
+  - Вінниця (101 hexagons)
+  - Тернопіль (47 hexagons)
+  - Біла Церква (31 hexagons)
+  - Бориспіль (17 hexagons)
+- **City selector dropdown** - choose specific city or all cities
+- **Copyright notice** - "Слава Баранский 2026" under mascot
+
+### Changed
+- Default city changed from 'kyiv' to 'all'
+- Parallel loading of all city data using Promise.allSettled
+
+### Removed
+- Quick preset buttons (Пн 8:00, Пн 18:00, Сб 14:00)
+
+### Technical
+- cities_config.py for city bounding boxes
+- generate_all_heatmaps.py unified pipeline script
+- ~2000 hexagons when all cities displayed
+
+---
+
+## [2.17.3] (Fennec) - 2025-12-26
+
+### Added
+- **Instruction modal** - "Інструкція" button in heatmap controls
+- **Data flow diagram** - visual explanation of heatmap methodology
+
+---
+
+## [2.17.2] (Fennec) - 2025-12-26
+
+### Added
+- **HeatmapInstructionModal** component with methodology explanation
+
+---
+
+## [2.17.1] (Fennec) - 2025-12-26
+
+### Changed
+- **Full data format** - switched from compact (0.8MB) to full format (6.27MB)
+- **Variation in synthetic patterns** - ±50% intensity, ±2h time shift
+- **Location-based modulation** - center 1.2x, suburbs 0.5-0.8x intensity
+- **Per-POI randomization** - reproducible via POI ID seed
+
+---
+
 ## [2.17.0] (Fennec) - 2025-12-26
 
 ### Added
@@ -9,12 +63,10 @@ All notable changes to Map Circle Viewer will be documented in this file.
 - **Time slider** - adjust hours (0-23) to see different time periods
 - **Day selector** - switch between days of week (Mon-Sun)
 - **Opacity control** - adjust heatmap transparency (0-100%)
-- **Quick presets** - shortcuts for common times (Mon 8:00, Mon 18:00, Sat 14:00, Sun 12:00)
 - **Fennec mascot** for v2.17.x (desert fox pixel art)
 
 ### Technical
 - H3 hexagonal aggregation (resolution 8, ~461m cells)
-- Compact JSON format: 999 hexagons, 0.8MB data file
 - Data sourced from 15,766 POIs across Kyiv
 - leaflet.heat integration for smooth heatmap rendering
 
