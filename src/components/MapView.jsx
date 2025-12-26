@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer } from './POILayers';
+import { MetroLayer, MallsLayer, FitnessLayer, KyivstarLayer } from './POILayers';
 
 // Available map tile layers
 const TILE_LAYERS = {
@@ -253,17 +253,14 @@ function MapView({
   showMetro = true,
   showMalls = false,
   showFitness = false,
-  showSupermarkets = false,
   showKyivstarActive = false,
   showKyivstarTerminated = false,
   metroRadius = 500,
   mallsRadius = 1000,
   fitnessRadius = 500,
-  supermarketsRadius = 500,
   metroOpacity = 0.15,
   mallsOpacity = 0.15,
   fitnessOpacity = 0.15,
-  supermarketsOpacity = 0.15,
   kyivstarActiveOpacity = 1,
   kyivstarTerminatedOpacity = 1,
   // New props for visible points panel
@@ -280,7 +277,6 @@ function MapView({
   const [metroPoints, setMetroPoints] = useState([]);
   const [mallPoints, setMallPoints] = useState([]);
   const [fitnessPoints, setFitnessPoints] = useState([]);
-  const [supermarketPoints, setSupermarketPoints] = useState([]);
 
   // Combine all infrastructure points based on visibility
   const infrastructurePoints = useCallback(() => {
@@ -288,10 +284,9 @@ function MapView({
     if (showMetro) points.push(...metroPoints);
     if (showMalls) points.push(...mallPoints);
     if (showFitness) points.push(...fitnessPoints);
-    if (showSupermarkets) points.push(...supermarketPoints);
     return points;
-  }, [showMetro, showMalls, showFitness, showSupermarkets,
-      metroPoints, mallPoints, fitnessPoints, supermarketPoints]);
+  }, [showMetro, showMalls, showFitness,
+      metroPoints, mallPoints, fitnessPoints]);
 
   return (
     <MapContainer
@@ -325,7 +320,6 @@ function MapView({
       <MetroLayer visible={showMetro} radius={metroRadius} opacity={metroOpacity} onDataLoaded={setMetroPoints} />
       <MallsLayer visible={showMalls} radius={mallsRadius} opacity={mallsOpacity} onDataLoaded={setMallPoints} />
       <FitnessLayer visible={showFitness} radius={fitnessRadius} opacity={fitnessOpacity} onDataLoaded={setFitnessPoints} />
-      <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} opacity={supermarketsOpacity} onDataLoaded={setSupermarketPoints} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" opacityMultiplier={kyivstarActiveOpacity} />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" opacityMultiplier={kyivstarTerminatedOpacity} />
 

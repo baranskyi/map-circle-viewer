@@ -8,7 +8,6 @@ const DEFAULT_ORDER = [
   'metro',
   'malls',
   'fitness',
-  'supermarkets',
   'kyivstarActive',
   'kyivstarTerminated'
 ];
@@ -40,14 +39,6 @@ const LAYER_CONFIG = {
     label: '🏋️ Фітнес-клуби',
     colorDots: [{ color: '#4CAF50', title: 'Фітнес' }],
     accentColor: 'green',
-    hasRadius: true,
-    hasOpacity: true
-  },
-  supermarkets: {
-    id: 'supermarkets',
-    label: '🛒 Супермаркети',
-    colorDots: [{ color: '#FF6B00', title: 'Супермаркети' }],
-    accentColor: 'orange',
     hasRadius: true,
     hasOpacity: true
   },
@@ -84,19 +75,16 @@ export default function DraggableInfrastructure({
   showMetro, setShowMetro,
   showMalls, setShowMalls,
   showFitness, setShowFitness,
-  showSupermarkets, setShowSupermarkets,
   showKyivstarActive, setShowKyivstarActive,
   showKyivstarTerminated, setShowKyivstarTerminated,
   // Radius states
   metroRadius, setMetroRadius,
   mallsRadius, setMallsRadius,
   fitnessRadius, setFitnessRadius,
-  supermarketsRadius, setSupermarketsRadius,
   // Opacity states
   metroOpacity, setMetroOpacity,
   mallsOpacity, setMallsOpacity,
   fitnessOpacity, setFitnessOpacity,
-  supermarketsOpacity, setSupermarketsOpacity,
   kyivstarActiveOpacity, setKyivstarActiveOpacity,
   kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity
 }) {
@@ -178,12 +166,6 @@ export default function DraggableInfrastructure({
           show: showFitness, setShow: setShowFitness,
           radius: fitnessRadius, setRadius: setFitnessRadius,
           opacity: fitnessOpacity, setOpacity: setFitnessOpacity
-        };
-      case 'supermarkets':
-        return {
-          show: showSupermarkets, setShow: setShowSupermarkets,
-          radius: supermarketsRadius, setRadius: setSupermarketsRadius,
-          opacity: supermarketsOpacity, setOpacity: setSupermarketsOpacity
         };
       case 'kyivstarActive':
         return {

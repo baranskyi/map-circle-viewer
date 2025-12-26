@@ -17,7 +17,7 @@ import { calculateCenter } from './utils/kmzParser';
 // - Animal name changes only on MINOR version bump (2.12.x -> 2.13.0)
 // - Patch versions keep the same animal (2.12.1, 2.12.2, 2.12.3 = same animal)
 // - Each minor version gets a unique meme animal mascot
-const APP_VERSION = '2.15.4 (Puffin)';
+const APP_VERSION = '2.15.5 (Puffin)';
 
 function MapApp() {
   const { user } = useAuthStore();
@@ -35,7 +35,6 @@ function MapApp() {
   const [showMetro, setShowMetro] = useState(true);
   const [showMalls, setShowMalls] = useState(false);
   const [showFitness, setShowFitness] = useState(false);
-  const [showSupermarkets, setShowSupermarkets] = useState(false);
   const [showKyivstarActive, setShowKyivstarActive] = useState(false);
   const [showKyivstarTerminated, setShowKyivstarTerminated] = useState(false);
 
@@ -43,13 +42,11 @@ function MapApp() {
   const [metroRadius, setMetroRadius] = useState(500);
   const [mallsRadius, setMallsRadius] = useState(1000);
   const [fitnessRadius, setFitnessRadius] = useState(500);
-  const [supermarketsRadius, setSupermarketsRadius] = useState(500);
 
   // POI Layer opacity settings (0-100%)
   const [metroOpacity, setMetroOpacity] = useState(50);
   const [mallsOpacity, setMallsOpacity] = useState(50);
   const [fitnessOpacity, setFitnessOpacity] = useState(50);
-  const [supermarketsOpacity, setSupermarketsOpacity] = useState(50);
   const [kyivstarActiveOpacity, setKyivstarActiveOpacity] = useState(100);
   const [kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity] = useState(100);
 
@@ -80,15 +77,13 @@ function MapApp() {
   // Get active groups based on mode
   const activeGroups = mode === 'supabase' && currentMap ? groups : localMapData.groups;
 
-  // Initialize group settings when groups change - preserve existing visibility
+  // Initialize group settings when groups change - preserve ALL existing settings
   useEffect(() => {
     setGroupSettings(prev => {
-      const settings = {};
+      const settings = { ...prev }; // Keep ALL previous settings (across all maps)
       activeGroups.forEach(group => {
-        // Preserve existing settings if they exist, otherwise initialize
-        if (prev[group.id]) {
-          settings[group.id] = prev[group.id];
-        } else {
+        // Only add settings for NEW groups, preserve existing
+        if (!settings[group.id]) {
           settings[group.id] = {
             visible: false,
             polygonsVisible: true,
@@ -257,17 +252,14 @@ function MapApp() {
         showMetro={showMetro}
         showMalls={showMalls}
         showFitness={showFitness}
-        showSupermarkets={showSupermarkets}
         showKyivstarActive={showKyivstarActive}
         showKyivstarTerminated={showKyivstarTerminated}
         metroRadius={metroRadius}
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
-        supermarketsRadius={supermarketsRadius}
         metroOpacity={metroOpacity / 100 * 0.3}
         mallsOpacity={mallsOpacity / 100 * 0.3}
         fitnessOpacity={fitnessOpacity / 100 * 0.3}
-        supermarketsOpacity={supermarketsOpacity / 100 * 0.3}
         kyivstarActiveOpacity={kyivstarActiveOpacity / 100}
         kyivstarTerminatedOpacity={kyivstarTerminatedOpacity / 100}
         onVisiblePointsChange={setVisiblePoints}
@@ -378,17 +370,14 @@ function MapApp() {
             showMetro={showMetro} setShowMetro={setShowMetro}
             showMalls={showMalls} setShowMalls={setShowMalls}
             showFitness={showFitness} setShowFitness={setShowFitness}
-            showSupermarkets={showSupermarkets} setShowSupermarkets={setShowSupermarkets}
             showKyivstarActive={showKyivstarActive} setShowKyivstarActive={setShowKyivstarActive}
             showKyivstarTerminated={showKyivstarTerminated} setShowKyivstarTerminated={setShowKyivstarTerminated}
             metroRadius={metroRadius} setMetroRadius={setMetroRadius}
             mallsRadius={mallsRadius} setMallsRadius={setMallsRadius}
             fitnessRadius={fitnessRadius} setFitnessRadius={setFitnessRadius}
-            supermarketsRadius={supermarketsRadius} setSupermarketsRadius={setSupermarketsRadius}
             metroOpacity={metroOpacity} setMetroOpacity={setMetroOpacity}
             mallsOpacity={mallsOpacity} setMallsOpacity={setMallsOpacity}
             fitnessOpacity={fitnessOpacity} setFitnessOpacity={setFitnessOpacity}
-            supermarketsOpacity={supermarketsOpacity} setSupermarketsOpacity={setSupermarketsOpacity}
             kyivstarActiveOpacity={kyivstarActiveOpacity} setKyivstarActiveOpacity={setKyivstarActiveOpacity}
             kyivstarTerminatedOpacity={kyivstarTerminatedOpacity} setKyivstarTerminatedOpacity={setKyivstarTerminatedOpacity}
           />
