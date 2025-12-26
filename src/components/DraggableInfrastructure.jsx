@@ -10,8 +10,7 @@ const DEFAULT_ORDER = [
   'fitness',
   'supermarkets',
   'kyivstarActive',
-  'kyivstarTerminated',
-  'apolloClubs'
+  'kyivstarTerminated'
 ];
 
 // Layer configurations
@@ -69,15 +68,6 @@ const LAYER_CONFIG = {
     hasRadius: false,
     hasOpacity: true,
     info: '878 гексагонів, 37605 клієнтів'
-  },
-  apolloClubs: {
-    id: 'apolloClubs',
-    label: '🏋️ APOLLO NEXT клуби',
-    colorDots: [{ color: '#f97316', title: 'Apollo clubs' }],
-    accentColor: 'orange',
-    hasRadius: true,
-    hasOpacity: true,
-    info: '19 клубів у 6 містах'
   }
 };
 
@@ -97,21 +87,18 @@ export default function DraggableInfrastructure({
   showSupermarkets, setShowSupermarkets,
   showKyivstarActive, setShowKyivstarActive,
   showKyivstarTerminated, setShowKyivstarTerminated,
-  showApolloClubs, setShowApolloClubs,
   // Radius states
   metroRadius, setMetroRadius,
   mallsRadius, setMallsRadius,
   fitnessRadius, setFitnessRadius,
   supermarketsRadius, setSupermarketsRadius,
-  apolloClubsRadius, setApolloClubsRadius,
   // Opacity states
   metroOpacity, setMetroOpacity,
   mallsOpacity, setMallsOpacity,
   fitnessOpacity, setFitnessOpacity,
   supermarketsOpacity, setSupermarketsOpacity,
   kyivstarActiveOpacity, setKyivstarActiveOpacity,
-  kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity,
-  apolloClubsOpacity, setApolloClubsOpacity
+  kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity
 }) {
   const { user } = useAuthStore();
   const [layerOrder, setLayerOrder] = useState(DEFAULT_ORDER);
@@ -207,12 +194,6 @@ export default function DraggableInfrastructure({
         return {
           show: showKyivstarTerminated, setShow: setShowKyivstarTerminated,
           opacity: kyivstarTerminatedOpacity, setOpacity: setKyivstarTerminatedOpacity
-        };
-      case 'apolloClubs':
-        return {
-          show: showApolloClubs, setShow: setShowApolloClubs,
-          radius: apolloClubsRadius, setRadius: setApolloClubsRadius,
-          opacity: apolloClubsOpacity, setOpacity: setApolloClubsOpacity
         };
       default:
         return {};

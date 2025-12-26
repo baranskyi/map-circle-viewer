@@ -38,14 +38,12 @@ function MapApp() {
   const [showSupermarkets, setShowSupermarkets] = useState(false);
   const [showKyivstarActive, setShowKyivstarActive] = useState(false);
   const [showKyivstarTerminated, setShowKyivstarTerminated] = useState(false);
-  const [showApolloClubs, setShowApolloClubs] = useState(false);
 
   // POI Layer radius settings (in meters)
   const [metroRadius, setMetroRadius] = useState(500);
   const [mallsRadius, setMallsRadius] = useState(1000);
   const [fitnessRadius, setFitnessRadius] = useState(500);
   const [supermarketsRadius, setSupermarketsRadius] = useState(500);
-  const [apolloClubsRadius, setApolloClubsRadius] = useState(500);
 
   // POI Layer opacity settings (0-100%)
   const [metroOpacity, setMetroOpacity] = useState(50);
@@ -54,7 +52,6 @@ function MapApp() {
   const [supermarketsOpacity, setSupermarketsOpacity] = useState(50);
   const [kyivstarActiveOpacity, setKyivstarActiveOpacity] = useState(100);
   const [kyivstarTerminatedOpacity, setKyivstarTerminatedOpacity] = useState(100);
-  const [apolloClubsOpacity, setApolloClubsOpacity] = useState(50);
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
@@ -252,19 +249,16 @@ function MapApp() {
         showSupermarkets={showSupermarkets}
         showKyivstarActive={showKyivstarActive}
         showKyivstarTerminated={showKyivstarTerminated}
-        showApolloClubs={showApolloClubs}
         metroRadius={metroRadius}
         mallsRadius={mallsRadius}
         fitnessRadius={fitnessRadius}
         supermarketsRadius={supermarketsRadius}
-        apolloClubsRadius={apolloClubsRadius}
         metroOpacity={metroOpacity / 100 * 0.3}
         mallsOpacity={mallsOpacity / 100 * 0.3}
         fitnessOpacity={fitnessOpacity / 100 * 0.3}
         supermarketsOpacity={supermarketsOpacity / 100 * 0.3}
         kyivstarActiveOpacity={kyivstarActiveOpacity / 100}
         kyivstarTerminatedOpacity={kyivstarTerminatedOpacity / 100}
-        apolloClubsOpacity={apolloClubsOpacity / 100 * 0.3}
         onVisiblePointsChange={setVisiblePoints}
         highlightedPointId={highlightedPointId}
         onMapReady={(map) => { mapRef.current = map; }}
@@ -379,19 +373,16 @@ function MapApp() {
             showSupermarkets={showSupermarkets} setShowSupermarkets={setShowSupermarkets}
             showKyivstarActive={showKyivstarActive} setShowKyivstarActive={setShowKyivstarActive}
             showKyivstarTerminated={showKyivstarTerminated} setShowKyivstarTerminated={setShowKyivstarTerminated}
-            showApolloClubs={showApolloClubs} setShowApolloClubs={setShowApolloClubs}
             metroRadius={metroRadius} setMetroRadius={setMetroRadius}
             mallsRadius={mallsRadius} setMallsRadius={setMallsRadius}
             fitnessRadius={fitnessRadius} setFitnessRadius={setFitnessRadius}
             supermarketsRadius={supermarketsRadius} setSupermarketsRadius={setSupermarketsRadius}
-            apolloClubsRadius={apolloClubsRadius} setApolloClubsRadius={setApolloClubsRadius}
             metroOpacity={metroOpacity} setMetroOpacity={setMetroOpacity}
             mallsOpacity={mallsOpacity} setMallsOpacity={setMallsOpacity}
             fitnessOpacity={fitnessOpacity} setFitnessOpacity={setFitnessOpacity}
             supermarketsOpacity={supermarketsOpacity} setSupermarketsOpacity={setSupermarketsOpacity}
             kyivstarActiveOpacity={kyivstarActiveOpacity} setKyivstarActiveOpacity={setKyivstarActiveOpacity}
             kyivstarTerminatedOpacity={kyivstarTerminatedOpacity} setKyivstarTerminatedOpacity={setKyivstarTerminatedOpacity}
-            apolloClubsOpacity={apolloClubsOpacity} setApolloClubsOpacity={setApolloClubsOpacity}
           />
 
           {/* Control Panel - only for local mode (not when Supabase map selected) */}

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { MapContainer, TileLayer, Circle, CircleMarker, Marker, Polygon, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
-import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer, ApolloClubsLayer } from './POILayers';
+import { MetroLayer, MallsLayer, FitnessLayer, SupermarketsLayer, KyivstarLayer } from './POILayers';
 
 // Available map tile layers
 const TILE_LAYERS = {
@@ -256,19 +256,16 @@ function MapView({
   showSupermarkets = false,
   showKyivstarActive = false,
   showKyivstarTerminated = false,
-  showApolloClubs = false,
   metroRadius = 500,
   mallsRadius = 1000,
   fitnessRadius = 500,
   supermarketsRadius = 500,
-  apolloClubsRadius = 500,
   metroOpacity = 0.15,
   mallsOpacity = 0.15,
   fitnessOpacity = 0.15,
   supermarketsOpacity = 0.15,
   kyivstarActiveOpacity = 1,
   kyivstarTerminatedOpacity = 1,
-  apolloClubsOpacity = 0.15,
   // New props for visible points panel
   onVisiblePointsChange,
   highlightedPointId,
@@ -284,7 +281,6 @@ function MapView({
   const [mallPoints, setMallPoints] = useState([]);
   const [fitnessPoints, setFitnessPoints] = useState([]);
   const [supermarketPoints, setSupermarketPoints] = useState([]);
-  const [apolloPoints, setApolloPoints] = useState([]);
 
   // Combine all infrastructure points based on visibility
   const infrastructurePoints = useCallback(() => {
@@ -293,10 +289,9 @@ function MapView({
     if (showMalls) points.push(...mallPoints);
     if (showFitness) points.push(...fitnessPoints);
     if (showSupermarkets) points.push(...supermarketPoints);
-    if (showApolloClubs) points.push(...apolloPoints);
     return points;
-  }, [showMetro, showMalls, showFitness, showSupermarkets, showApolloClubs,
-      metroPoints, mallPoints, fitnessPoints, supermarketPoints, apolloPoints]);
+  }, [showMetro, showMalls, showFitness, showSupermarkets,
+      metroPoints, mallPoints, fitnessPoints, supermarketPoints]);
 
   return (
     <MapContainer
@@ -333,7 +328,6 @@ function MapView({
       <SupermarketsLayer visible={showSupermarkets} radius={supermarketsRadius} opacity={supermarketsOpacity} onDataLoaded={setSupermarketPoints} />
       <KyivstarLayer visible={showKyivstarActive} layerType="active_clients" opacityMultiplier={kyivstarActiveOpacity} />
       <KyivstarLayer visible={showKyivstarTerminated} layerType="terminated_clients" opacityMultiplier={kyivstarTerminatedOpacity} />
-      <ApolloClubsLayer visible={showApolloClubs} radius={apolloClubsRadius} opacity={apolloClubsOpacity} onDataLoaded={setApolloPoints} />
 
       {groups.map(group => {
         const settings = groupSettings[group.id];
