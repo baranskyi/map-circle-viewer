@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { userPreferencesApi } from '../services/api';
 import { useAuthStore } from '../stores/authStore';
+import InfoTooltip from './InfoTooltip';
 
 // Default layer order
 const DEFAULT_ORDER = [
@@ -184,9 +185,15 @@ export default function DraggableInfrastructure({
 
   return (
     <div className="mb-4 p-3 bg-gray-50 rounded-lg">
-      <h3 className="text-sm font-semibold mb-3 text-gray-700">
-        Інфраструктура
-      </h3>
+      <div className="flex items-center gap-2 mb-3">
+        <h3 className="text-sm font-semibold text-gray-700">
+          Інфраструктура
+        </h3>
+        <InfoTooltip
+          text="Розділи інфраструктури неможливо видалити або додати. Але ви можете змінювати їх місцями, змінювати порядок."
+          position="bottom"
+        />
+      </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="infrastructure-layers">

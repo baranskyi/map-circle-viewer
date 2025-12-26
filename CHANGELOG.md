@@ -2,6 +2,13 @@
 
 All notable changes to Map Circle Viewer will be documented in this file.
 
+## [2.16.3] (Quetzal) - 2025-12-26
+
+### Added
+- **InfoTooltip for Infrastructure** - explains that layers can be reordered but not added/removed
+
+---
+
 ## [2.16.2] (Quetzal) - 2025-12-26
 
 ### Changed
