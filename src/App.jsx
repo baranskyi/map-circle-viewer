@@ -58,7 +58,7 @@ function MapApp() {
   const [heatmapDay, setHeatmapDay] = useState(0);
   const [heatmapHour, setHeatmapHour] = useState(12);
   const [heatmapOpacity, setHeatmapOpacity] = useState(70);
-  const [heatmapCity, setHeatmapCity] = useState('kyiv');
+  const [heatmapCity, setHeatmapCity] = useState('all');
 
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');

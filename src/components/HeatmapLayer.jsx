@@ -162,9 +162,12 @@ export function HeatmapInstructionModal({ isOpen, onClose }) {
  *   hour: 0-23
  *   opacity: 0-100 (percentage)
  */
+// All available cities for 'all' option
+const ALL_CITIES = ['kyiv', 'odesa', 'lviv', 'vinnytsia', 'ternopil', 'bila_tserkva', 'boryspil'];
+
 export default function HeatmapLayer({
   visible = false,
-  city = 'kyiv',
+  city = 'all',
   day = 0,
   hour = 12,
   opacity = 70,
@@ -184,12 +187,30 @@ export default function HeatmapLayer({
       setError(null);
 
       try {
-        const response = await fetch(`/heatmap_${city}.json`);
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
+        if (city === 'all') {
+          // Load all cities and merge hexagons
+          const allHexagons = [];
+          const results = await Promise.allSettled(
+            ALL_CITIES.map(c => fetch(`/heatmap_${c}.json`).then(r => r.json()))
+          );
+
+          results.forEach((result, idx) => {
+            if (result.status === 'fulfilled' && result.value?.hexagons) {
+              allHexagons.push(...result.value.hexagons);
+            } else {
+              console.warn(`Failed to load ${ALL_CITIES[idx]}`);
+            }
+          });
+
+          setData({ hexagons: allHexagons });
+        } else {
+          const response = await fetch(`/heatmap_${city}.json`);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+          }
+          const json = await response.json();
+          setData(json);
         }
-        const json = await response.json();
-        setData(json);
       } catch (err) {
         console.error(`Failed to load heatmap data for ${city}:`, err);
         setError(err.message);

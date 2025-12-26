@@ -25,3 +25,10 @@ npm-debug.log*
 
 # Cache
 .cache/
+
+# Python
+__pycache__/
+*.pyc
+
+# Intermediate data files
+scripts/data/

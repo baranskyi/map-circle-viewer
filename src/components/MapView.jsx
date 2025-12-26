@@ -275,7 +275,7 @@ function MapView({
   heatmapDay = 0,
   heatmapHour = 12,
   heatmapOpacity = 70,
-  heatmapCity = 'kyiv'
+  heatmapCity = 'all'
 }) {
   const [currentLayer, setCurrentLayer] = useState('osm');
   const layer = TILE_LAYERS[currentLayer];

@@ -375,10 +375,11 @@ export default function DraggableInfrastructure({
                 <div className="flex items-center gap-2">
                   <span className="text-xs text-gray-500 w-10">Місто:</span>
                   <select
-                    value={heatmapCity || 'kyiv'}
+                    value={heatmapCity || 'all'}
                     onChange={(e) => setHeatmapCity(e.target.value)}
                     className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded bg-white"
                   >
+                    <option value="all">Всі міста</option>
                     <option value="kyiv">Київ</option>
                     <option value="odesa">Одеса</option>
                     <option value="lviv">Львів</option>
