@@ -7,6 +7,7 @@ export default function MapSelector({ onMapSelect }) {
   const { user } = useAuthStore();
   const { maps, loading, error, fetchMaps, createMap, deleteMap } = useDataStore();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
   const [newMapName, setNewMapName] = useState('');
   const [newMapDescription, setNewMapDescription] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null); // { id, name } or null
@@ -65,14 +66,12 @@ export default function MapSelector({ onMapSelect }) {
           />
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href="https://www.loom.com/share/5b3aee8d2b074bd79ffb4f826bcc3fce"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            onClick={() => setShowVideoModal(true)}
             className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
           >
             Інструкція
-          </a>
+          </button>
           <button
             onClick={() => setShowCreateModal(true)}
             className="text-sm bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
@@ -205,6 +204,39 @@ export default function MapSelector({ onMapSelect }) {
               >
                 Видалити
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Instruction Modal */}
+      {showVideoModal && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-[2000]"
+          onClick={() => setShowVideoModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg overflow-hidden w-[90vw] max-w-4xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="font-semibold text-gray-800">Інструкція: як експортувати карту з Google Maps</h3>
+              <button
+                onClick={() => setShowVideoModal(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="relative" style={{ paddingBottom: '56.25%' }}>
+              <iframe
+                src="https://www.loom.com/embed/5b3aee8d2b074bd79ffb4f826bcc3fce"
+                frameBorder="0"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full"
+              />
             </div>
           </div>
         </div>
