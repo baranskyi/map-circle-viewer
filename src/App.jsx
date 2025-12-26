@@ -56,6 +56,9 @@ function MapApp() {
   // Mode: 'local' (KMZ files) or 'supabase' (saved maps)
   const [mode, setMode] = useState('local');
 
+  // Flag to show map list vs selected map content (preserves groups when going back)
+  const [showingMapList, setShowingMapList] = useState(true);
+
   // Visible points panel state
   const [visiblePoints, setVisiblePoints] = useState([]);
   const [highlightedPointId, setHighlightedPointId] = useState(null);
@@ -105,6 +108,7 @@ function MapApp() {
     const map = await fetchMap(mapId);
     if (map) {
       setMode('supabase');
+      setShowingMapList(false);
       // Center on first point if exists
       const allPoints = map.groups?.flatMap(g => g.points || []) || [];
       if (allPoints.length > 0) {
@@ -315,22 +319,19 @@ function MapApp() {
           {/* Map Selector (for authenticated users) */}
           {user && (
             <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-              {/* Show map list only when no map selected */}
-              {!(currentMap && mode === 'supabase') && (
+              {/* Show map list when showingMapList is true */}
+              {showingMapList && (
                 <MapSelector onMapSelect={handleMapSelect} />
               )}
 
               {/* Selected Map Content */}
-              {currentMap && mode === 'supabase' && (
+              {!showingMapList && currentMap && mode === 'supabase' && (
                 <div>
                   {/* Map Header */}
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-bold text-blue-800 text-lg">{currentMap.name}</h3>
                     <button
-                      onClick={() => {
-                        setMode('local');
-                        useDataStore.getState().setCurrentMap(null);
-                      }}
+                      onClick={() => setShowingMapList(true)}
                       className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
                     >
                       ← Назад до списку
